@@ -141,7 +141,7 @@ def main(): # {{{1
             elif res == 127 or res == 1:
                 print('\033[34;40mFile ERROR          \033[0m')
             elif res == 0:
-                os.system('touch WA_' + files + str(i) + more['out'])
+                os.system('touch WA_' + files + str(i) + '.out')
                 command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
                 diffres = os.system(command + ' > WA_' + files + str(i) + more['out'])
                 if diffres == 0:
