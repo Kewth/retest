@@ -26,7 +26,7 @@ The Third line is some config:
     The config which can be used:
         be= : default=0 : the begining number of test data.
         en= : default=9 : the ending number of test data.
-        out= : default=.out : the suffix name of test data.
+        out= : default=out : the suffix name of test data.
         time= : default=1 : the time limit of each test whose unit is second.
 '''
 PARSER = argparse.ArgumentParser(description=HELPMSG)
