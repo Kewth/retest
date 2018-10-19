@@ -146,7 +146,7 @@ def main(): # {{{1
                 diffres = os.system(command + ' > WA_' + files + str(i) + more['out'])
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m')
-                    mark += 100 / (more['end'] - more['be'])
+                    mark += 100 / (more['en'] - more['be'])
                     os.system('rm WA_' + files + str(i) +  more['out'])
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
@@ -158,7 +158,7 @@ def main(): # {{{1
         allmark += mark
         os.system('rm own')
         os.system('rm own.out')
-        print('\033[' + str(3+more['end']-more['be']) + 'B')
+        print('\033[' + str(3+more['en']-more['be']) + 'B')
         con = input('continue?(y/n)')
         if con == 'n':
             print('All marks: ', allmark)
