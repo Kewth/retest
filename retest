@@ -3,10 +3,43 @@
 'retest.py'
 import os
 import threading
-import subprocess
-import time
-
+# import subprocess
+# import time
+import argparse
 VERSION = '5.0'
+
+# print('adasdasdasdsada')
+HELPMSG = '''
+A retest command which is like lemon but run in terminal.
+
+The first line is the file name:
+    e.g.
+    (input:) ak
+    It will test ak.cpp.
+
+The second line is the data name:
+    e.g.
+    (input:) data/ak
+    It will make dir ./data/da/ as its data dir.
+
+The Third line is some config:
+    The config which can be used:
+        be= : default=0 : the begining number of test data.
+        en= : default=9 : the ending number of test data.
+        out= : default=.out : the suffix name of test data.
+        time= : default=1 : the time limit of each test whose unit is second.
+'''
+PARSER = argparse.ArgumentParser(description=HELPMSG)
+PARSER.add_argument('--version', '-v', action='store_true', help='print version')
+PARSER.add_argument('--learn', '-l', action='store_true', help='learn something')
+ARGS = PARSER.parse_args()
+if ARGS.version:
+    print('retest', VERSION)
+    print('Made by', 'Kewth')
+    exit(0)
+if ARGS.learn:
+    print(HELPMSG)
+    exit(0)
 
 class ThreadRun(threading.Thread): # {{{1
     'Thread to call run'
