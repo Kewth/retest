@@ -61,57 +61,49 @@ def get_input(): # {{{1
     In = open('/home/kewth/Kewth_/file.txt', mode='r')
     de_file = In.readline()[:-1]
     de_data = In.readline()[:-1]
-    # de_l = In.readline()[:-1]
-    # de_r = In.readline()[:-1]
     de_more = In.readline()[:-1]
     files = input('enter the file name(default '+de_file+'): ')
     data = input('enter the stdin/out dir name(default '+de_data+'): ')
-    # num_l = input('input test number start(default '+de_l+'): ')
-    # num_r = input('input test number end(default '+de_r+'): ')
     more = input('for more config(default '+de_more+'): ')
     In.close()
     if files == '':
         files = de_file
     if data == '':
         data = de_data
-    if more == '':
-        more = de_more
-    # if num_l == '':
-    #     num_l = int(de_l)
-    # else:
-    #     num_l = int(num_l)
-    # if num_r == '':
-    #     num_r = int(de_r) + 1
-    # else:
-    #     num_r = int(num_r) + 1
-    more_li = more.split(' ')
     Out = open('/home/kewth/Kewth_/file.txt', mode='w')
     Out.write(files + '\n')
     Out.write(data + '\n')
-    # Out.write(str(num_l) + '\n')
-    # Out.write(str(num_r - 1) + '\n')
-    Out.write(more + '\n')
+    res_more, res_str = put_more(more.split(' '), de_more.split(' '))
+    Out.write(res_str + '\n')
     Out.close()
     if data[-1] != '/':
         data += '/'
-    # return data, files, num_l, num_r, put_more(more_li)
-    return data, files, put_more(more_li)
+    return data, files, res_more
 
-def put_more(more): # {{{1
-    'get more by stdin and return a dict for arg'
-    dic = {'out_name': '.out', 'time': 1, 'be': 0, 'en': 10, }
+def put_dic(dic, more): # {{{1
+    'get more and put dict'
     for i in more:
         s = i.split('=')
         if len(s) == 2:
             if s[0] == 'out':
-                dic['out_name'] = '.' + s[1]
+                dic['out'] = s[1]
             elif s[0] == 'ti':
-                dic['time'] = int(s[1])
+                dic['ti'] = int(s[1])
             elif s[0] == 'be':
-                dic['begin'] = int(s[1])
+                dic['be'] = int(s[1])
             elif s[0] == 'en':
-                dic['end'] = int(s[1]) + 1
+                dic['en'] = int(s[1])
     return dic
+
+def put_more(more, de_more): # {{{1
+    'get more from stdin and return a dict for config'
+    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, }
+    dic = put_dic(dic, de_more)
+    dic = put_dic(dic, more)
+    res_str = ''
+    for i in dic:
+        res_str += i + '=' + str(dic[i]) + '  '
+    return dic , res_str
 
 def main(): # {{{1
     'Main fuction'
@@ -125,13 +117,13 @@ def main(): # {{{1
             res = os.system('g++ '+files+'.cpp -o own')
         else:
             res = os.system('g++ '+files+' -o own')
-        if res == 1:
+        if res != 0:
             print('\033[33;40mCompile Error          \033[0m', '')
             return 1
         mark = 0
-        for i in range(more['begin'], more['end']):
+        for i in range(more['be'], more['en']+1):
             print(str(i), ' of ', files)
-            print('\033[' + str(i - more['begin']) + 'B')
+            print('\033[' + str(i - more['be']) + 'B')
             print('\033[2A')
             # child = subprocess.Popen(['./own', '<'+data+files+str(i)+'.in', '>own.out'])
             # ti = time.time()
@@ -143,30 +135,30 @@ def main(): # {{{1
             #     print('\033[33;40mTime Limit Exceeded \033[0m')
             thread = ThreadRun(data, files, i)
             thread.start()
-            thread.join(1)
+            thread.join(more['ti'])
             if thread.isAlive():
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
                 print('\033[34;40mFile ERROR          \033[0m')
             elif res == 0:
-                os.system('touch WA_' + files + str(i) + more['out_name'])
-                command = 'diff -b -B own.out ' + data + files + str(i) + more['out_name']
-                diffres = os.system(command + ' > WA_' + files + str(i) + more['out_name'])
+                os.system('touch WA_' + files + str(i) + more['out'])
+                command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
+                diffres = os.system(command + ' > WA_' + files + str(i) + more['out'])
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m')
-                    mark += 100 / (more['end'] - more['begin'])
-                    os.system('rm WA_' + files + str(i) +  more['out_name'])
+                    mark += 100 / (more['end'] - more['be'])
+                    os.system('rm WA_' + files + str(i) +  more['out'])
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
             print('Marks:' , mark)
             os.system('sleep 0.3')
-            print('\033[' + str(4+i-more['begin']) + 'A')
+            print('\033[' + str(4+i-more['be']) + 'A')
         allmark += mark
         os.system('rm own')
         os.system('rm own.out')
-        print('\033[' + str(3+more['end']-more['begin']) + 'B')
+        print('\033[' + str(3+more['end']-more['be']) + 'B')
         con = input('continue?(y/n)')
         if con == 'n':
             print('All marks: ', allmark)
