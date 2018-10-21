@@ -143,11 +143,11 @@ def main(): # {{{1
             elif res == 0:
                 os.system('touch WA_' + files + str(i) + '.out')
                 command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
-                diffres = os.system(command + ' > WA_' + files + str(i) + more['out'])
+                diffres = os.system(command + ' > WA_' + files + str(i) + '.out')
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m')
                     mark += 100 / (more['en'] - more['be'] + 1)
-                    os.system('rm WA_' + files + str(i) +  more['out'])
+                    os.system('rm WA_' + files + str(i) +  '.out')
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
             else:
