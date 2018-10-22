@@ -120,7 +120,7 @@ def main(): # {{{1
         res = 0
         g_option = ''
         if more['o2']:
-            g_option += ' -o2'
+            g_option += ' -O2'
         if files.find('.cpp') == -1:
             res = os.system('g++ '+files+'.cpp -o own ' + g_option)
         else:
