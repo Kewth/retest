@@ -120,11 +120,11 @@ def main(): # {{{1
         res = 0
         g_option = ''
         if more['o2']:
-            g_option += ' o2'
+            g_option += ' -o2'
         if files.find('.cpp') == -1:
-            res = os.system('g++ '+files+'.cpp -o own' + g_option)
+            res = os.system('g++ '+files+'.cpp -o own ' + g_option)
         else:
-            res = os.system('g++ '+files+' -o own' + g_option)
+            res = os.system('g++ '+files+' -o own ' + g_option)
         if res != 0:
             print('\033[33;40mCompile Error          \033[0m', '')
             return 1
