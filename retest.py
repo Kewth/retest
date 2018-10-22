@@ -93,11 +93,16 @@ def put_dic(dic, more): # {{{1
                 dic['be'] = int(s[1])
             elif s[0] == 'en':
                 dic['en'] = int(s[1])
+            elif s[0] == 'o2':
+                if s[1] == '1':
+                    dic['o2'] = True
+                if s[1] == '0':
+                    dic['o2'] = False
     return dic
 
 def put_more(more, de_more): # {{{1
     'get more from stdin and return a dict for config'
-    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, }
+    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, 'o2': False, }
     dic = put_dic(dic, de_more)
     dic = put_dic(dic, more)
     res_str = ''
@@ -113,10 +118,13 @@ def main(): # {{{1
         # data, files, num_l, num_r, more = get_input()
         data, files, more = get_input()
         res = 0
+        g_option = ''
+        if more['o2']:
+            g_option += ' o2'
         if files.find('.cpp') == -1:
-            res = os.system('g++ '+files+'.cpp -o own')
+            res = os.system('g++ '+files+'.cpp -o own' + g_option)
         else:
-            res = os.system('g++ '+files+' -o own')
+            res = os.system('g++ '+files+' -o own' + g_option)
         if res != 0:
             print('\033[33;40mCompile Error          \033[0m', '')
             return 1
