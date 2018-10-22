@@ -95,14 +95,14 @@ def put_dic(dic, more): # {{{1
                 dic['en'] = int(s[1])
             elif s[0] == 'o2':
                 if s[1] == '1':
-                    dic['o2'] = True
+                    dic['o2'] = 1
                 if s[1] == '0':
-                    dic['o2'] = False
+                    dic['o2'] = 0
     return dic
 
 def put_more(more, de_more): # {{{1
     'get more from stdin and return a dict for config'
-    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, 'o2': False, }
+    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, 'o2': 0, }
     dic = put_dic(dic, de_more)
     dic = put_dic(dic, more)
     res_str = ''
