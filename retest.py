@@ -162,7 +162,7 @@ def main(): # {{{1
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
             print('Marks:' , mark)
-            os.system('sleep 0.3')
+            # os.system('sleep 0.3')
             print('\033[' + str(4+i-more['be']) + 'A')
         allmark += mark
         os.system('rm own')
