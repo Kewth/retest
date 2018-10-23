@@ -54,7 +54,7 @@ class ThreadRun(threading.Thread): # {{{1
 
 def run_exe(data, files, _id): # {{{1
     'run the exe'
-    res = os.system('./own < ' + data + files + str(_id) + '.in > own.out')
+    res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own.out')
     return res
 
 def get_input(): # {{{1
