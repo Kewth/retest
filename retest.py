@@ -153,6 +153,7 @@ def main(): # {{{1
             thread = ThreadRun(data, files, i)
             thread.start()
             thread.join(more['ti'])
+            rm_wa_file = True
             if thread.isAlive():
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
@@ -165,11 +166,13 @@ def main(): # {{{1
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m')
                     mark += 100 / (more['en'] - more['be'] + 1)
-                    os.system('rm WA_' + files + str(i) +  '.out')
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
+                    rm_wa_file = False
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
+            if rm_wa_file:
+                os.system('rm WA_' + files + str(i) + '.out')
             print('Marks:' , mark)
             print('\033[' + str(4+i-more['be']) + 'A')
             os.system('rm own' + str(i) + '.out')
