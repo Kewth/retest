@@ -4,7 +4,7 @@
 import os
 import threading
 # import subprocess
-# import time
+import time
 import argparse
 VERSION = '5.0'
 
@@ -152,7 +152,9 @@ def main(): # {{{1
             #     print('\033[33;40mTime Limit Exceeded \033[0m')
             thread = ThreadRun(data, files, i)
             thread.start()
+            t_begin = time.time()
             thread.join(more['ti'])
+            t_use = time.time() - t_begin
             rm_wa_file = True
             if thread.isAlive():
                 print('\033[33;40mTime Limit Exceeded \033[0m')
@@ -164,7 +166,7 @@ def main(): # {{{1
                 # command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
                 diffres = os.system(command + ' > WA_' + files + str(i) + '.out')
                 if diffres == 0:
-                    print('\033[32;40mAccept              \033[0m')
+                    print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
                     mark += 100 / (more['en'] - more['be'] + 1)
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
