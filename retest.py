@@ -54,7 +54,8 @@ class ThreadRun(threading.Thread): # {{{1
 
 def run_exe(data, files, _id): # {{{1
     'run the exe'
-    res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own.out')
+    res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own' + str(_id) + '.out')
+    # res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own.out')
     return res
 
 def get_input(): # {{{1
@@ -151,7 +152,8 @@ def main(): # {{{1
                 print('\033[34;40mFile ERROR          \033[0m')
             elif res == 0:
                 os.system('touch WA_' + files + str(i) + '.out')
-                command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
+                command = 'diff -b -B own' + str(i) + '.out ' + data + files + str(i) + more['out']
+                # command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
                 diffres = os.system(command + ' > WA_' + files + str(i) + '.out')
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m')
@@ -159,6 +161,7 @@ def main(): # {{{1
                     os.system('rm WA_' + files + str(i) +  '.out')
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
+                os.system('rm own' + str(i) + '.out')
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
             print('Marks:' , mark)
@@ -166,7 +169,6 @@ def main(): # {{{1
             print('\033[' + str(4+i-more['be']) + 'A')
         allmark += mark
         os.system('rm own')
-        os.system('rm own.out')
         print('\033[' + str(4+more['en']-more['be']) + 'B')
         con = input('continue?(y/n)')
         if con == 'n':
