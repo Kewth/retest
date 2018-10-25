@@ -168,12 +168,11 @@ def main(): # {{{1
                     os.system('rm WA_' + files + str(i) +  '.out')
                 else:
                     print('\033[31;40mWrongAnswer         \033[0m')
-                os.system('rm own' + str(i) + '.out')
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
             print('Marks:' , mark)
-            # os.system('sleep 0.3')
             print('\033[' + str(4+i-more['be']) + 'A')
+            os.system('rm own' + str(i) + '.out')
         allmark += mark
         os.system('rm own')
         print('\033[' + str(4+more['en']-more['be']) + 'B')
