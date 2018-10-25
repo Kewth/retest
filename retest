@@ -28,7 +28,8 @@ The Third line is some config:
         en= : default=9 : the ending number of test data.
         out= : default=.out : the suffix name of test data.
         time= : default=1 : the time limit of each test whose unit is second.
-        o2= : default=0 : If it's set to 1, retest will turn O2.
+        o2= : default=0 : If it's set to 1, retest will turn O2 option.
+        o3= : default=0 : If it's set to 1, retest will turn O3 option.
 '''
 PARSER = argparse.ArgumentParser(description=HELPMSG)
 PARSER.add_argument('--version', '-v', action='store_true', help='print version')
