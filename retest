@@ -100,11 +100,16 @@ def put_dic(dic, more): # {{{1
                     dic['o2'] = 1
                 if s[1] == '0':
                     dic['o2'] = 0
+            elif s[0] == 'o3':
+                if s[1] == '1':
+                    dic['o3'] = 1
+                if s[1] == '0':
+                    dic['o3'] = 0
     return dic
 
 def put_more(more, de_more): # {{{1
     'get more from stdin and return a dict for config'
-    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, 'o2': 0, }
+    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, }
     dic = put_dic(dic, de_more)
     dic = put_dic(dic, more)
     res_str = ''
@@ -123,6 +128,8 @@ def main(): # {{{1
         g_option = ''
         if more['o2']:
             g_option += ' -O2'
+        if more['o3']:
+            g_option += ' -O3'
         if files.find('.cpp') == -1:
             res = os.system('g++ '+files+'.cpp -o own ' + g_option)
         else:
