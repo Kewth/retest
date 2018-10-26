@@ -50,8 +50,9 @@ class ThreadRun(threading.Thread): # {{{1
         self.data = data
         self.files = files
         self.rid = rid
+        self.res = 0
     def run(self):
-        run_exe(self.data, self.files, self.rid)
+        self.res = run_exe(self.data, self.files, self.rid)
 
 def run_exe(data, files, _id): # {{{1
     'run the exe'
@@ -157,6 +158,7 @@ def main(): # {{{1
             thread.join(more['ti'])
             t_use = time.time() - t_begin
             rm_wa_file = True
+            res = thread.res
             if thread.isAlive():
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
