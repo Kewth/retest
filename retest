@@ -57,7 +57,7 @@ def run_exe(data, files, _id): # {{{1
     'run the exe'
     res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own' + str(_id) + '.out')
     # res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own.out')
-    return res
+    return res // 256
 
 def get_input(): # {{{1
     'get input from stdin'
