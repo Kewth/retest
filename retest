@@ -176,7 +176,7 @@ def main(): # {{{1
                 print('\033[31;40mRunTime Error       \033[0m')
             if rm_wa_file:
                 os.system('rm WA_' + files + str(i) + '.out 2> /dev/null')
-            print('Marks:' , mark)
+            print('Marks:' , '%.2f' % mark)
             print('\033[' + str(4+i-more['be']) + 'A')
             os.system('rm own' + str(i) + '.out')
         allmark += mark
