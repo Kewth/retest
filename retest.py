@@ -149,6 +149,32 @@ def create_files(ranges): # {{{1
         os.system('touch 2> /dev/null own' + str(i) + '.out')
         os.system('mkdir -p retest_dir'+str(i))
 
+def Compile(files, name, more):
+    'Compile source code'
+    g_option = ''
+    if more['o2']:
+        g_option += ' -O2'
+    if more['o3']:
+        g_option += ' -O3'
+    if name.find('.cpp') != -1:
+        name = name[0 : name.find('.cpp')]
+    res = os.system('g++ '+files+name+'.cpp -o own ' + g_option)
+    return res
+
+def create_thread(data, name, _id, more):
+    'create a thread to run the exe'
+    thread = ThreadRun(data, name, _id)
+    thread.start()
+    t_begin = time.time()
+    thread.join(more['ti'])
+    t_use = time.time() - t_begin
+    rm_wa_file = True
+    res = thread.res
+    if thread.isAlive():
+        thread.kill()
+        res = -1
+    return res, t_use, rm_wa_file
+
 def main(): # {{{1
     'Main fuction'
     print('welcome to use retest ', VERSION)
@@ -156,33 +182,17 @@ def main(): # {{{1
     while True:
         # data, files, num_l, num_r, more = get_input()
         data, files, name, more = get_input()
-        res = 0
-        g_option = ''
-        if more['o2']:
-            g_option += ' -O2'
-        if more['o3']:
-            g_option += ' -O3'
-        if name.find('.cpp') != -1:
-            name = name[0 : name.find('.cpp')]
-        res = os.system('g++ '+files+name+'.cpp -o own ' + g_option)
-        if res != 0:
+        if Compile(files, name, more) != 0:
             print('\033[33;40mCompile Error          \033[0m', '')
             return 1
-        mark = 0
         create_files(range(more['be'], more['en']+1))
+        res, mark = 0, 0
         for i in range(more['be'], more['en']+1):
             print(str(i), ' of ', name)
             print('\033[' + str(i - more['be']) + 'B')
             print('\033[2A')
-            thread = ThreadRun(data, name, i)
-            thread.start()
-            t_begin = time.time()
-            thread.join(more['ti'])
-            t_use = time.time() - t_begin
-            rm_wa_file = True
-            res = thread.res
-            if thread.isAlive():
-                thread.kill()
+            res, t_use, rm_wa_file = create_thread(data, name, i, more)
+            if res == -1:
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
                 print('\033[34;40mFile ERROR          \033[0m')
