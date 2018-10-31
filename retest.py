@@ -32,8 +32,10 @@ The Third line is some config:
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
 '''
 PARSER = argparse.ArgumentParser(description=HELPMSG)
-PARSER.add_argument('--version', '-v', action='store_true', help='print version')
-PARSER.add_argument('--learn', '-l', action='store_true', help='learn something')
+PARSER.add_argument('-v', '--version', action='store_true', help='print version')
+PARSER.add_argument('-l', '--learn', action='store_true', help='learn something')
+PARSER.add_argument('-L', '-lemon', action='store_true', help=
+                    'Use lemon\'s directory structure style')
 ARGS = PARSER.parse_args()
 if ARGS.version:
     print('retest', VERSION)
@@ -144,14 +146,6 @@ def main(): # {{{1
             print(str(i), ' of ', files)
             print('\033[' + str(i - more['be']) + 'B')
             print('\033[2A')
-            # child = subprocess.Popen(['./own', '<'+data+files+str(i)+'.in', '>own.out'])
-            # ti = time.time()
-            # while time.time() < ti + 1:
-            #     if child.poll() == 0:
-            #         break
-            # if child.poll() != 0:
-            #     child.kill()
-            #     print('\033[33;40mTime Limit Exceeded \033[0m')
             thread = ThreadRun(data, files, i)
             thread.start()
             t_begin = time.time()
@@ -166,7 +160,6 @@ def main(): # {{{1
             elif res == 0:
                 os.system('touch WA_' + files + str(i) + '.out')
                 command = 'diff -b -B own' + str(i) + '.out ' + data + files + str(i) + more['out']
-                # command = 'diff -b -B own.out ' + data + files + str(i) + more['out']
                 diffres = os.system(command + ' > WA_' + files + str(i) + '.out')
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
@@ -178,7 +171,7 @@ def main(): # {{{1
                 print('\033[31;40mRunTime Error       \033[0m')
             if rm_wa_file:
                 os.system('rm WA_' + files + str(i) + '.out 2> /dev/null')
-            print('Marks:' , '%.2f' % mark)
+            print('Marks:', '%.2f' % mark)
             print('\033[' + str(4+i-more['be']) + 'A')
             os.system('rm own' + str(i) + '.out')
         allmark += mark
