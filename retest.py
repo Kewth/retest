@@ -61,7 +61,7 @@ def run_exe(data, name, _id): # {{{1
     os.system('cp '+data+name+str(_id)+'.in '+name+'.in')
     res = os.system('./own 2> /dev/null < '+name+'.in > '+name+'.out')
     os.system('mv '+name+'.out own'+str(_id)+'.out')
-    os.system('rm own'+str(_id)+'.in')
+    os.system('rm '+name+'.in')
     return res // 256
 
 def get_input(): # {{{1
