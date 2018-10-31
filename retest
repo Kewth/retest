@@ -48,21 +48,26 @@ if ARGS.learn:
 
 class ThreadRun(threading.Thread): # {{{1
     'Thread to call run'
-    def __init__(self, data, files, rid):
+    def __init__(self, data, name, rid):
         threading.Thread.__init__(self)
         self.data = data
-        self.files = files
+        self.name = name
         self.rid = rid
         self.res = 0
+        self.killed = False
     def run(self):
-        self.res = run_exe(self.data, self.files, self.rid)
+        self.res = run_exe(self.data, self.name, self.rid)
+        if self.killed:
+            self.res = 2
+        else:
+            os.system('mv retest_dir'+str(self.rid)+'/'+self.name+'.out own'+str(self.rid)+'.out')
+    def kill(self):
+        self.killed = True
 
 def run_exe(data, name, _id): # {{{1
     'run the exe'
-    os.system('mkdir retest_dir'+str(_id))
     os.system('cp '+data+name+str(_id)+'.in retest_dir'+str(_id)+'/'+name+'.in')
     res = os.system('cd retest_dir'+str(_id)+' ; ../own 2> /dev/null < '+name+'.in > '+name+'.out')
-    os.system('mv retest_dir'+str(_id)+'/'+name+'.out own'+str(_id)+'.out')
     return res // 256
 
 def get_input(): # {{{1
@@ -138,6 +143,12 @@ def delete_files(ranges): # {{{1
         os.system('rm -r retest_dir'+str(i))
     os.system('rm own')
 
+def create_files(ranges): # {{{1
+    'create temporary files'
+    for i in ranges:
+        os.system('touch 2> /dev/null own' + str(i) + '.out')
+        os.system('mkdir -p retest_dir'+str(i))
+
 def main(): # {{{1
     'Main fuction'
     print('welcome to use retest ', VERSION)
@@ -158,6 +169,7 @@ def main(): # {{{1
             print('\033[33;40mCompile Error          \033[0m', '')
             return 1
         mark = 0
+        create_files(range(more['be'], more['en']+1))
         for i in range(more['be'], more['en']+1):
             print(str(i), ' of ', name)
             print('\033[' + str(i - more['be']) + 'B')
@@ -170,6 +182,7 @@ def main(): # {{{1
             rm_wa_file = True
             res = thread.res
             if thread.isAlive():
+                thread.kill()
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
                 print('\033[34;40mFile ERROR          \033[0m')
