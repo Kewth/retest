@@ -7,7 +7,7 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.17'
+VERSION = '5.19'
 
 # print('adasdasdasdsada')
 HELPMSG = '''
