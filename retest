@@ -56,10 +56,9 @@ class ThreadRun(threading.Thread): # {{{1
     def run(self):
         self.res = run_exe(self.data, self.files, self.rid)
 
-def run_exe(data, files, _id): # {{{1
+def run_exe(data, name, _id): # {{{1
     'run the exe'
-    res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own' + str(_id) + '.out')
-    # res = os.system('./own 2> /dev/null < ' + data + files + str(_id) + '.in > own.out')
+    res = os.system('./own 2> /dev/null < ' + data + name + str(_id) + '.in > own' + str(_id) + '.out')
     return res // 256
 
 def get_input(): # {{{1
@@ -84,7 +83,14 @@ def get_input(): # {{{1
     Out.close()
     if data[-1] != '/':
         data += '/'
-    return data, files, res_more
+    pos = files.rfind('/')
+    if pos == -1:
+        name = files
+        files = ''
+    else:
+        name = files[pos+1 : len(files)]
+        files = files[0 : pos+1]
+    return data, files, name, res_more
 
 def put_dic(dic, more): # {{{1
     'get more and put dict'
@@ -127,26 +133,26 @@ def main(): # {{{1
     allmark = 0
     while True:
         # data, files, num_l, num_r, more = get_input()
-        data, files, more = get_input()
+        data, files, name, more = get_input()
+        print(files, name)
         res = 0
         g_option = ''
         if more['o2']:
             g_option += ' -O2'
         if more['o3']:
             g_option += ' -O3'
-        if files.find('.cpp') == -1:
-            res = os.system('g++ '+files+'.cpp -o own ' + g_option)
-        else:
-            res = os.system('g++ '+files+' -o own ' + g_option)
+        if name.find('.cpp') != -1:
+            name = name[0 : name.find('.cpp')]
+        res = os.system('g++ '+files+name+'.cpp -o own ' + g_option)
         if res != 0:
             print('\033[33;40mCompile Error          \033[0m', '')
             return 1
         mark = 0
         for i in range(more['be'], more['en']+1):
-            print(str(i), ' of ', files)
+            print(str(i), ' of ', name)
             print('\033[' + str(i - more['be']) + 'B')
             print('\033[2A')
-            thread = ThreadRun(data, files, i)
+            thread = ThreadRun(data, name, i)
             thread.start()
             t_begin = time.time()
             thread.join(more['ti'])
@@ -158,9 +164,9 @@ def main(): # {{{1
             elif res == 127 or res == 1:
                 print('\033[34;40mFile ERROR          \033[0m')
             elif res == 0:
-                os.system('touch WA_' + files + str(i) + '.out')
-                command = 'diff -b -B own' + str(i) + '.out ' + data + files + str(i) + more['out']
-                diffres = os.system(command + ' > WA_' + files + str(i) + '.out')
+                os.system('touch WA_' + name + str(i) + '.out')
+                command = 'diff -b -B own' + str(i) + '.out ' + data + name + str(i) + more['out']
+                diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
                     mark += 100 / (more['en'] - more['be'] + 1)
@@ -170,8 +176,8 @@ def main(): # {{{1
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
             if rm_wa_file:
-                os.system('rm WA_' + files + str(i) + '.out 2> /dev/null')
-            print('Marks:' , '%.2f' % mark)
+                os.system('rm WA_' + name + str(i) + '.out 2> /dev/null')
+            print('Marks:', '%.2f' % mark)
             print('\033[' + str(4+i-more['be']) + 'A')
             os.system('rm own' + str(i) + '.out')
         allmark += mark
