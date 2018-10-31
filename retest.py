@@ -59,10 +59,10 @@ class ThreadRun(threading.Thread): # {{{1
 
 def run_exe(data, name, _id): # {{{1
     'run the exe'
-    os.system('cp '+data+name+str(_id)+'.in '+name+'.in')
-    res = os.system('./own 2> /dev/null < '+name+'.in > '+name+'.out')
-    os.system('mv '+name+'.out own'+str(_id)+'.out')
-    os.system('rm '+name+'.in')
+    os.system('mkdir retest_dir'+str(_id))
+    os.system('cp '+data+name+str(_id)+'.in retest_dir'+str(_id)+'/'+name+'.in')
+    res = os.system('cd retest_dir'+str(_id)+' ; ../own 2> /dev/null < '+name+'.in > '+name+'.out')
+    os.system('mv retest_dir'+str(_id)+'/'+name+'.out own'+str(_id)+'.out')
     return res // 256
 
 def get_input(): # {{{1
@@ -129,7 +129,14 @@ def put_more(more, de_more): # {{{1
     res_str = ''
     for i in dic:
         res_str += i + '=' + str(dic[i]) + '  '
-    return dic , res_str
+    return dic, res_str
+
+def delete_files(ranges): # {{{1
+    'delete temporary files'
+    for i in ranges:
+        os.system('rm own' + str(i) + '.out')
+        os.system('rm -r retest_dir'+str(i))
+    os.system('rm own')
 
 def main(): # {{{1
     'Main fuction'
@@ -182,16 +189,14 @@ def main(): # {{{1
                 os.system('rm WA_' + name + str(i) + '.out 2> /dev/null')
             print('Marks:', '%.2f' % mark)
             print('\033[' + str(4+i-more['be']) + 'A')
-            os.system('rm own' + str(i) + '.out')
+        delete_files(range(more['be'], more['en']+1))
         allmark += mark
-        os.system('rm own')
         print('\033[' + str(4+more['en']-more['be']) + 'B')
         con = input('continue?(y/n)')
         if con == 'n':
             print('All marks: ', allmark)
             return 0
 
-# Support path specification for file names
 # Begin {{{1
 RES = main()
 print('Made by Kewth', '(c)')
