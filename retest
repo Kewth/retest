@@ -149,7 +149,7 @@ def create_files(ranges): # {{{1
         os.system('touch 2> /dev/null own' + str(i) + '.out')
         os.system('mkdir -p retest_dir'+str(i))
 
-def Compile(files, name, more):
+def Compile(files, name, more): # {{{1
     'Compile source code'
     g_option = ''
     if more['o2']:
@@ -161,7 +161,7 @@ def Compile(files, name, more):
     res = os.system('g++ '+files+name+'.cpp -o own ' + g_option)
     return res
 
-def create_thread(data, name, _id, more):
+def create_thread(data, name, _id, more): # {{{1
     'create a thread to run the exe'
     thread = ThreadRun(data, name, _id)
     thread.start()
