@@ -7,7 +7,7 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.22'
+VERSION = '5.23'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
 HELPMSG = '''
@@ -37,8 +37,9 @@ PARSER.add_argument('-v', '--version', action='store_true', help='print version'
 PARSER.add_argument('-l', '--learn', action='store_true', help='learn something')
 PARSER.add_argument('-d', '--default', action='store_true', help=
                     'Use default config(like press enter three times)')
-PARSER.add_argument('-L', '-lemon', action='store_true', help=
-                    'Use lemon\'s directory structure style')
+PARSER.add_argument('-L', '--lemon', action='append', help=
+                    'Use lemon\'s directory structure style'
+                    + '(Followed by the user name and file name)')
 ARGS = PARSER.parse_args()
 if ARGS.version:
     print('retest', VERSION)
@@ -83,6 +84,12 @@ def get_input(): # {{{1
     more = ''
     if ARGS.default:
         print('You\'re using default configuastion')
+    elif ARGS.lemon:
+        get = ARGS.lemon[0]
+        pos = get.find('/')
+        files = 'source/' + get
+        data = 'data/' + get[pos: ]
+        more = input('for more config(default '+de_more+'): ')
     else:
         files = input('enter the file name(default '+de_file+'): ')
         data = input('enter the stdin/out dir name(default '+de_data+'): ')
