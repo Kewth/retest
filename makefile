@@ -16,3 +16,6 @@ reinstall:
 
 uninstall:
 	sudo rm /usr/bin/retest
+
+clean:
+	rm retest
