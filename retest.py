@@ -7,12 +7,10 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.23'
+VERSION = '5.24'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
-HELPMSG = '''
-A retest command which is like lemon but run in terminal.
-
+LREANMSG = '''
 The first line is the file name:
     e.g.
     (input:) ak
@@ -31,6 +29,13 @@ The Third line is some config:
         ti= : default=1 : the time limit of each test whose unit is second.
         o2= : default=0 : If it's set to 1, retest will turn O2 option.
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
+
+Some usefull arguments:
+    You can rough understanding by using 'retest -h' or 'retest --help'.
+'''
+
+HELPMSG = '''
+A retest command which is like lemon but run in terminal.
 '''
 PARSER = argparse.ArgumentParser(description=HELPMSG)
 PARSER.add_argument('-v', '--version', action='store_true', help='print version')
