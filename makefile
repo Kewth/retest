@@ -1,21 +1,19 @@
-compile:
-	cp retest.py retest
-	chmod +x retest
+install: retest init
+	sudo cp retest /usr/bin
 
-install:
+init: ~/.config ~/.config/retest ~/.config/retest/file.txt
+	mkdir ~/.config -p
 	mkdir ~/.config/retest -p
 	touch ~/.config/retest/file.txt
-	sudo mv retest /usr/bin
+	touch init
 
-reinstall:
+retest: retest.py
 	cp retest.py retest
 	chmod +x retest
-	cp retest.py retest
-	chmod +x retest
-	sudo mv retest /usr/bin
 
-uninstall:
+uninstall: clean
 	sudo rm /usr/bin/retest
 
 clean:
 	rm retest
+	rm init
