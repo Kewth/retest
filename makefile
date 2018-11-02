@@ -1,4 +1,7 @@
-retest: retest.py
+init:
 	cp retest.py retest
 	chmod +x retest
-	cp retest /usr/bin
+
+install:
+	sudo cp retest /usr/bin
+	rm retest
