@@ -7,9 +7,9 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.20'
+VERSION = '5.21'
+CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
-# print('adasdasdasdsada')
 HELPMSG = '''
 A retest command which is like lemon but run in terminal.
 
@@ -72,7 +72,7 @@ def run_exe(data, name, _id): # {{{1
 
 def get_input(): # {{{1
     'get input from stdin'
-    In = open('/home/kewth/Kewth_/file.txt', mode='r')
+    In = open(CONFIG_FILE, mode='r')
     de_file = In.readline()[:-1]
     de_data = In.readline()[:-1]
     de_more = In.readline()[:-1]
@@ -84,7 +84,7 @@ def get_input(): # {{{1
         files = de_file
     if data == '':
         data = de_data
-    Out = open('/home/kewth/Kewth_/file.txt', mode='w')
+    Out = open(CONFIG_FILE, mode='w')
     Out.write(files + '\n')
     Out.write(data + '\n')
     res_more, res_str = put_more(more.split(' '), de_more.split(' '))
