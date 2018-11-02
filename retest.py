@@ -7,10 +7,10 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.24'
+VERSION = '5.25'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
-LREANMSG = '''
+LEARNMSG = '''
 The first line is the file name:
     e.g.
     (input:) ak
@@ -21,7 +21,7 @@ The second line is the data name:
     (input:) data/ak
     It will make dir ./data/da/ as its data dir.
 
-The Third line is some config:
+The Third line is some configuration:
     The config which can be used:
         be= : default=0 : the begining number of test data.
         en= : default=9 : the ending number of test data.
@@ -32,6 +32,27 @@ The Third line is some config:
 
 Some usefull arguments:
     You can rough understanding by using 'retest -h' or 'retest --help'.
+
+    --version, -v:
+            Print version message like this:
+                retest VERSION
+                Made by Kewth
+    --learn, -l:
+            Print this message.
+            To display this better, you can use 'less' command:
+                retest -l | less
+    --default, -d:
+            Use the last configuration instead of input.
+            If you're judge your code again and again, this arguments can help
+        you not to press enter three times.
+    --lemon, -l USERNAME/FILENAME:
+            !!Make sure your working directory is in the root directory of
+        lemon which has data/ and source/, otherwise it won't work will!!
+            Use lemon\' s directory structure instead of input.
+            For example, if your name in source directory is IAKIOI, and the
+        problem you want ot judge is ak, just input:
+                retest -L IAKIOI/ak
+            Then input above configuration.
 '''
 
 HELPMSG = '''
@@ -51,7 +72,7 @@ if ARGS.version:
     print('Made by', 'Kewth')
     exit(0)
 if ARGS.learn:
-    print(HELPMSG)
+    print(LEARNMSG)
     exit(0)
 
 class ThreadRun(threading.Thread): # {{{1
@@ -88,7 +109,7 @@ def get_input(): # {{{1
     data = ''
     more = ''
     if ARGS.default:
-        print('You\'re using default configuastion')
+        print('You\'re using default configuration')
     elif ARGS.lemon:
         get = ARGS.lemon[0]
         pos = get.find('/')
