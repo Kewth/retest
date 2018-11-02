@@ -7,7 +7,7 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.19'
+VERSION = '5.20'
 
 # print('adasdasdasdsada')
 HELPMSG = '''
@@ -28,7 +28,7 @@ The Third line is some config:
         be= : default=0 : the begining number of test data.
         en= : default=9 : the ending number of test data.
         out= : default=.out : the suffix name of test data.
-        time= : default=1 : the time limit of each test whose unit is second.
+        ti= : default=1 : the time limit of each test whose unit is second.
         o2= : default=0 : If it's set to 1, retest will turn O2 option.
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
 '''
