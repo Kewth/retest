@@ -7,7 +7,7 @@ import threading
 import time
 import argparse
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.25'
+VERSION = '5.26'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
 LEARNMSG = '''
@@ -110,21 +110,25 @@ def get_input(): # {{{1
     more = ''
     if ARGS.default:
         print('You\'re using default configuration')
+        files = de_file
+        data = de_data
     elif ARGS.lemon:
         get = ARGS.lemon[0]
         pos = get.find('/')
         files = 'source/' + get
         data = 'data/' + get[pos: ]
+        os.system('echo the files: ; ls ' + data)
         more = input('for more config(default '+de_more+'): ')
     else:
         files = input('enter the file name(default '+de_file+'): ')
         data = input('enter the stdin/out dir name(default '+de_data+'): ')
+        if files == '':
+            files = de_file
+        if data == '':
+            data = de_data
+        os.system('echo the files: ; ls ' + data)
         more = input('for more config(default '+de_more+'): ')
     In.close()
-    if files == '':
-        files = de_file
-    if data == '':
-        data = de_data
     Out = open(CONFIG_FILE, mode='w')
     Out.write(files + '\n')
     Out.write(data + '\n')
