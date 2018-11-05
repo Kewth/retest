@@ -249,7 +249,7 @@ def main(): # {{{1
                     print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
                     mark += 100 / (more['en'] - more['be'] + 1)
                 else:
-                    print('\033[31;40mWrongAnswer         \033[0m')
+                    print('\033[31;40mWrongAnswer         \033[0m', 'time:', '%.4f' % t_use)
                     rm_wa_file = False
             else:
                 print('\033[31;40mRunTime Error       \033[0m')
