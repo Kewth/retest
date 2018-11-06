@@ -8,7 +8,7 @@ import time
 import argparse
 import multiprocessing
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.29'
+VERSION = '5.30'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
 LEARNMSG = '''
