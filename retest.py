@@ -7,8 +7,9 @@ import threading
 import time
 import argparse
 import multiprocessing
+import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.30'
+VERSION = '6.32'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
 LEARNMSG = '''
@@ -28,6 +29,7 @@ The Third line is some configuration:
         en= : default=9 : the ending number of test data.
         out= : default=.out : the suffix name of test data.
         ti= : default=1000 : the time limit of each test whose unit is millisecond.
+        me= : default=512 : the memory limit of each test whose unit is megabyte.
         o2= : default=0 : If it's set to 1, retest will turn O2 option.
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
 
@@ -193,11 +195,13 @@ def put_dic(dic, more): # {{{1
                     dic['o3'] = 1
                 if s[1] == '0':
                     dic['o3'] = 0
+            elif s[0] == 'me':
+                dic['me'] = int(s[1])
     return dic
 
 def put_more(more, de_more): # {{{1
     'get more from stdin and return a dict for config'
-    dic = {'out': '.out', 'ti': 1000, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, }
+    dic = {'out': '.out', 'ti': 1000, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, 'me': 512}
     dic = put_dic(dic, de_more)
     dic = put_dic(dic, more)
     res_str = ''
@@ -236,16 +240,28 @@ def create_process(data, name, _id, more): # {{{1
     proc = ProcessRun(data, name, _id, son_con)
     proc.start()
     t_begin = time.time()
-    proc.join(more['ti']/1000)
-    t_use = time.time() - t_begin
-    rm_wa_file = True
+    t_use = 0
+    mem_use = 0
+    max_t = more['ti']/1000
+    memory_limit = more['me']*1024*1024
     res = 0
+    while proc.is_alive():
+        proc_info = psutil.Process(proc.pid)
+        mem_use = max(mem_use, proc_info.memory_info().rss)
+        if mem_use > memory_limit:
+            res = -2
+            break
+        t_use = time.time() - t_begin
+        if t_use > max_t:
+            res = -1
+            break
+    # proc.join(more['ti']/1000)
+    rm_wa_file = True
     if proc.is_alive():
         proc.kill()
-        res = -1
     else:
         res = pr_con.recv()
-    return res, int(t_use*1000), rm_wa_file
+    return res, int(t_use*1000), mem_use//1024//1024, rm_wa_file
 
 def create_thread(data, name, _id, more): # {{{1
     'create a thread to run the exe'
@@ -272,32 +288,40 @@ def main(): # {{{1
     res, score = 0, 0
     for i in range(more['be'], more['en']+1):
         print(str(i), ' of ', name)
-        print('\033[' + str(i - more['be']) + 'B')
+        print('\033[' + str((i-more['be'])*2) + 'B')
         print('\033[2A')
-        res, t_use, rm_wa_file = create_process(data, name, i, more)
+        res, t_use, mem_use, rm_wa_file = create_process(data, name, i, more)
         # res, t_use, rm_wa_file = create_thread(data, name, i, more)
         if res == -1:
-            print('\033[33;40mTime Limit Exceeded \033[0m')
+            print('\033[33;40mTime Limit Exceed   \033[0m')
+            print('-> time: INF, memory:', mem_use, 'MB')
+        if res == -2:
+            print('\033[33;40mMemory Limit Exceed \033[0m')
+            print('-> time: XXX, memory: INF')
         elif res == 127 or res == 1:
             print('\033[34;40mFile ERROR          \033[0m')
+            print('-> time: XXX, memory: XXX')
         elif res == 0:
             os.system('touch WA_' + name + str(i) + '.out')
             command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + name + str(i) + more['out']
             diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
             if diffres == 0:
-                print('\033[32;40mAccept              \033[0m', 'time:', t_use, 'ms')
+                print('\033[32;40mAccept              \033[0m')
+                print('-> time:', t_use, 'ms, memory:', mem_use, 'MB')
                 score += 100 / (more['en'] - more['be'] + 1)
             else:
-                print('\033[31;40mWrongAnswer         \033[0m', 'time:', t_use, 'ms')
+                print('\033[31;40mWrongAnswer         \033[0m')
+                print('-> time:', t_use, 'ms, memory:', mem_use, 'MB')
                 rm_wa_file = False
         else:
-            print('\033[31;40mRunTime Error       \033[0m')
+            print('\033[35;40mRunTime Error       \033[0m')
+            print('-> time: XXX, memory: XXX')
         if rm_wa_file:
             os.system('rm WA_' + name + str(i) + '.out 2> /dev/null')
         print('Scores:', '%.2f' % score)
-        print('\033[' + str(4+i-more['be']) + 'A')
+        print('\033[' + str(3+(i-more['be']+1)*2) + 'A')
     delete_files(range(more['be'], more['en']+1))
-    print('\033[' + str(4+more['en']-more['be']) + 'B')
+    print('\033[' + str(4+(more['en']-more['be'])*2) + 'B')
     return 0
 
 # Begin {{{1
