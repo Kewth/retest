@@ -245,7 +245,7 @@ def create_process(data, name, _id, more): # {{{1
         res = -1
     else:
         res = pr_con.recv()
-    return res, t_use, rm_wa_file
+    return res, int(t_use*1000), rm_wa_file
 
 def create_thread(data, name, _id, more): # {{{1
     'create a thread to run the exe'
@@ -259,7 +259,7 @@ def create_thread(data, name, _id, more): # {{{1
     if thread.isAlive():
         thread.kill()
         res = -1
-    return res, t_use, rm_wa_file
+    return res, int(t_use*1000), rm_wa_file
 
 def main(): # {{{1
     'Main fuction'
@@ -285,10 +285,10 @@ def main(): # {{{1
             command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + name + str(i) + more['out']
             diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
             if diffres == 0:
-                print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
+                print('\033[32;40mAccept              \033[0m', 'time:', t_use, 'ms')
                 score += 100 / (more['en'] - more['be'] + 1)
             else:
-                print('\033[31;40mWrongAnswer         \033[0m', 'time:', '%.4f' % t_use)
+                print('\033[31;40mWrongAnswer         \033[0m', 'time:', t_use, 'ms')
                 rm_wa_file = False
         else:
             print('\033[31;40mRunTime Error       \033[0m')
