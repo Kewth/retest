@@ -27,7 +27,7 @@ The Third line is some configuration:
         be= : default=0 : the begining number of test data.
         en= : default=9 : the ending number of test data.
         out= : default=.out : the suffix name of test data.
-        ti= : default=1 : the time limit of each test whose unit is millisecond.
+        ti= : default=1000 : the time limit of each test whose unit is millisecond.
         o2= : default=0 : If it's set to 1, retest will turn O2 option.
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
 
@@ -46,7 +46,7 @@ Some usefull arguments:
             Use the last configuration instead of input.
             If you're judge your code again and again, this arguments can help
         you not to press enter three times.
-    --lemon, -l USERNAME/FILENAME:
+    --lemon, -L USERNAME/FILENAME:
             !!Make sure your working directory is in the root directory of
         lemon which has data/ and source/, otherwise it won't work will!!
             Use lemon\' s directory structure instead of input.
@@ -264,49 +264,41 @@ def create_thread(data, name, _id, more): # {{{1
 def main(): # {{{1
     'Main fuction'
     print('welcome to use retest ', VERSION)
-    allmark = 0
-    while True:
-        # data, files, num_l, num_r, more = get_input()
-        data, files, name, more = get_input()
-        if Compile(files, name, more) != 0:
-            print('\033[33;40mCompile Error          \033[0m', '')
-            return 1
-        create_files(range(more['be'], more['en']+1))
-        res, mark = 0, 0
-        pool = multiprocessing.Pool(1)
-        for i in range(more['be'], more['en']+1):
-            print(str(i), ' of ', name)
-            print('\033[' + str(i - more['be']) + 'B')
-            print('\033[2A')
-            res, t_use, rm_wa_file = create_process(data, name, i, more)
-            # res, t_use, rm_wa_file = create_thread(data, name, i, more)
-            if res == -1:
-                print('\033[33;40mTime Limit Exceeded \033[0m')
-            elif res == 127 or res == 1:
-                print('\033[34;40mFile ERROR          \033[0m')
-            elif res == 0:
-                os.system('touch WA_' + name + str(i) + '.out')
-                command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + name + str(i) + more['out']
-                diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
-                if diffres == 0:
-                    print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
-                    mark += 100 / (more['en'] - more['be'] + 1)
-                else:
-                    print('\033[31;40mWrongAnswer         \033[0m', 'time:', '%.4f' % t_use)
-                    rm_wa_file = False
+    data, files, name, more = get_input()
+    if Compile(files, name, more) != 0:
+        print('\033[33;40mCompile Error          \033[0m', '')
+        return 1
+    create_files(range(more['be'], more['en']+1))
+    res, score = 0, 0
+    for i in range(more['be'], more['en']+1):
+        print(str(i), ' of ', name)
+        print('\033[' + str(i - more['be']) + 'B')
+        print('\033[2A')
+        res, t_use, rm_wa_file = create_process(data, name, i, more)
+        # res, t_use, rm_wa_file = create_thread(data, name, i, more)
+        if res == -1:
+            print('\033[33;40mTime Limit Exceeded \033[0m')
+        elif res == 127 or res == 1:
+            print('\033[34;40mFile ERROR          \033[0m')
+        elif res == 0:
+            os.system('touch WA_' + name + str(i) + '.out')
+            command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + name + str(i) + more['out']
+            diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
+            if diffres == 0:
+                print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
+                score += 100 / (more['en'] - more['be'] + 1)
             else:
-                print('\033[31;40mRunTime Error       \033[0m')
-            if rm_wa_file:
-                os.system('rm WA_' + name + str(i) + '.out 2> /dev/null')
-            print('Marks:', '%.2f' % mark)
-            print('\033[' + str(4+i-more['be']) + 'A')
-        delete_files(range(more['be'], more['en']+1))
-        allmark += mark
-        print('\033[' + str(4+more['en']-more['be']) + 'B')
-        con = input('continue?(y/n)')
-        if con == 'n':
-            print('All marks: ', allmark)
-            return 0
+                print('\033[31;40mWrongAnswer         \033[0m', 'time:', '%.4f' % t_use)
+                rm_wa_file = False
+        else:
+            print('\033[31;40mRunTime Error       \033[0m')
+        if rm_wa_file:
+            os.system('rm WA_' + name + str(i) + '.out 2> /dev/null')
+        print('Scores:', '%.2f' % score)
+        print('\033[' + str(4+i-more['be']) + 'A')
+    delete_files(range(more['be'], more['en']+1))
+    print('\033[' + str(4+more['en']-more['be']) + 'B')
+    return 0
 
 # Begin {{{1
 RES = main()
