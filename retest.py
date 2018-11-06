@@ -8,7 +8,7 @@ import time
 import argparse
 import multiprocessing
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.27'
+VERSION = '5.28'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
 LEARNMSG = '''
@@ -27,7 +27,7 @@ The Third line is some configuration:
         be= : default=0 : the begining number of test data.
         en= : default=9 : the ending number of test data.
         out= : default=.out : the suffix name of test data.
-        ti= : default=1 : the time limit of each test whose unit is second.
+        ti= : default=1 : the time limit of each test whose unit is millisecond.
         o2= : default=0 : If it's set to 1, retest will turn O2 option.
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
 
@@ -196,7 +196,7 @@ def put_dic(dic, more): # {{{1
 
 def put_more(more, de_more): # {{{1
     'get more from stdin and return a dict for config'
-    dic = {'out': '.out', 'ti': 1, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, }
+    dic = {'out': '.out', 'ti': 1000, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, }
     dic = put_dic(dic, de_more)
     dic = put_dic(dic, more)
     res_str = ''
@@ -235,7 +235,7 @@ def create_process(data, name, _id, more): # {{{1
     proc = ProcessRun(data, name, _id, son_con)
     proc.start()
     t_begin = time.time()
-    proc.join(more['ti'])
+    proc.join(more['ti']/1000)
     t_use = time.time() - t_begin
     rm_wa_file = True
     res = 0
