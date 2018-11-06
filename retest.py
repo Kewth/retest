@@ -8,7 +8,7 @@ import time
 import argparse
 import multiprocessing
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '5.28'
+VERSION = '5.29'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 
 LEARNMSG = '''
@@ -90,7 +90,7 @@ class ThreadRun(threading.Thread): # {{{1
         if self.killed:
             self.res = 2
         else:
-            os.system('mv retest_dir'+str(self.rid)+'/'+self.name+'.out own'+str(self.rid)+'.out')
+            os.system('mv retest_dir'+str(self.rid)+'/'+self.name+'.out own_of_retest'+str(self.rid)+'.out')
     def kill(self):
         self.killed = True
 
@@ -108,18 +108,19 @@ class ProcessRun(multiprocessing.Process): # {{{1
         if self.killed:
             exitres = 2
         else:
-            os.system('mv retest_dir'+str(self.rid)+'/'+self.fname+'.out own'+str(self.rid)+'.out')
+            os.system('mv retest_dir'+str(self.rid)+'/'+self.fname+'.out own_of_retest'+str(self.rid)+'.out')
         self.connect.send(exitres)
         self.connect.close()
     def kill(self):
         self.killed = True
         self.terminate()
-        os.system('kill '+str(self.pid))
+        self.join()
+        os.system('pkill own_of_retest')
 
 def run_exe(data, name, _id): # {{{1
     'run the exe'
     os.system('cp '+data+name+str(_id)+'.in retest_dir'+str(_id)+'/'+name+'.in')
-    res = os.system('cd retest_dir'+str(_id)+' ; ../own 2> /dev/null < '+name+'.in > '+name+'.out')
+    res = os.system('cd retest_dir'+str(_id)+' ; ../own_of_retest 2> /dev/null < '+name+'.in > '+name+'.out')
     return res // 256
 
 def get_input(): # {{{1
@@ -207,14 +208,14 @@ def put_more(more, de_more): # {{{1
 def delete_files(ranges): # {{{1
     'delete temporary files'
     for i in ranges:
-        os.system('rm own' + str(i) + '.out')
+        os.system('rm own_of_retest' + str(i) + '.out')
         os.system('rm -r retest_dir'+str(i))
-    os.system('rm own')
+    os.system('rm own_of_retest')
 
 def create_files(ranges): # {{{1
     'create temporary files'
     for i in ranges:
-        os.system('touch 2> /dev/null own' + str(i) + '.out')
+        os.system('touch 2> /dev/null own_of_retest' + str(i) + '.out')
         os.system('mkdir -p retest_dir'+str(i))
 
 def Compile(files, name, more): # {{{1
@@ -226,7 +227,7 @@ def Compile(files, name, more): # {{{1
         g_option += ' -O3'
     if name.find('.cpp') != -1:
         name = name[0 : name.find('.cpp')]
-    res = os.system('g++ '+files+name+'.cpp -o own ' + g_option)
+    res = os.system('g++ '+files+name+'.cpp -o own_of_retest ' + g_option)
     return res
 
 def create_process(data, name, _id, more): # {{{1
@@ -251,7 +252,7 @@ def create_thread(data, name, _id, more): # {{{1
     thread = ThreadRun(data, name, _id)
     thread.start()
     t_begin = time.time()
-    thread.join(more['ti'])
+    thread.join(more['ti']/1000)
     t_use = time.time() - t_begin
     rm_wa_file = True
     res = thread.res
@@ -278,13 +279,14 @@ def main(): # {{{1
             print('\033[' + str(i - more['be']) + 'B')
             print('\033[2A')
             res, t_use, rm_wa_file = create_process(data, name, i, more)
+            # res, t_use, rm_wa_file = create_thread(data, name, i, more)
             if res == -1:
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
                 print('\033[34;40mFile ERROR          \033[0m')
             elif res == 0:
                 os.system('touch WA_' + name + str(i) + '.out')
-                command = 'diff -b -B own' + str(i) + '.out ' + data + name + str(i) + more['out']
+                command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + name + str(i) + more['out']
                 diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
                 if diffres == 0:
                     print('\033[32;40mAccept              \033[0m', 'time:', '%.4f' % t_use)
