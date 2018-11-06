@@ -6,6 +6,7 @@ import threading
 # import subprocess
 import time
 import argparse
+import multiprocessing
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
 VERSION = '5.27'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
@@ -92,6 +93,28 @@ class ThreadRun(threading.Thread): # {{{1
             os.system('mv retest_dir'+str(self.rid)+'/'+self.name+'.out own'+str(self.rid)+'.out')
     def kill(self):
         self.killed = True
+
+class ProcessRun(multiprocessing.Process): # {{{1
+    'Process to call run'
+    def __init__(self, data, fname, rid, connect):
+        multiprocessing.Process.__init__(self)
+        self.data = data
+        self.fname = fname
+        self.rid = rid
+        self.killed = False
+        self.connect = connect
+    def run(self):
+        exitres = run_exe(self.data, self.fname, self.rid)
+        if self.killed:
+            exitres = 2
+        else:
+            os.system('mv retest_dir'+str(self.rid)+'/'+self.fname+'.out own'+str(self.rid)+'.out')
+        self.connect.send(exitres)
+        self.connect.close()
+    def kill(self):
+        self.killed = True
+        self.terminate()
+        os.system('kill '+str(self.pid))
 
 def run_exe(data, name, _id): # {{{1
     'run the exe'
@@ -206,6 +229,23 @@ def Compile(files, name, more): # {{{1
     res = os.system('g++ '+files+name+'.cpp -o own ' + g_option)
     return res
 
+def create_process(data, name, _id, more): # {{{1
+    'create a process to run the exe'
+    pr_con, son_con = multiprocessing.Pipe()
+    proc = ProcessRun(data, name, _id, son_con)
+    proc.start()
+    t_begin = time.time()
+    proc.join(more['ti'])
+    t_use = time.time() - t_begin
+    rm_wa_file = True
+    res = 0
+    if proc.is_alive():
+        proc.kill()
+        res = -1
+    else:
+        res = pr_con.recv()
+    return res, t_use, rm_wa_file
+
 def create_thread(data, name, _id, more): # {{{1
     'create a thread to run the exe'
     thread = ThreadRun(data, name, _id)
@@ -232,11 +272,12 @@ def main(): # {{{1
             return 1
         create_files(range(more['be'], more['en']+1))
         res, mark = 0, 0
+        pool = multiprocessing.Pool(1)
         for i in range(more['be'], more['en']+1):
             print(str(i), ' of ', name)
             print('\033[' + str(i - more['be']) + 'B')
             print('\033[2A')
-            res, t_use, rm_wa_file = create_thread(data, name, i, more)
+            res, t_use, rm_wa_file = create_process(data, name, i, more)
             if res == -1:
                 print('\033[33;40mTime Limit Exceeded \033[0m')
             elif res == 127 or res == 1:
