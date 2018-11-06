@@ -311,7 +311,8 @@ def main(): # {{{1
 # Begin {{{1
 RES = main()
 print('Made by Kewth', '(c)')
-print('Press', 'Ctrl-c', 'to', 'exit')
+print('Press', 'Ctrl-c', 'to', 'forcefully', 'exit')
+print('Thanks', 'for', 'using', 'retest')
 exit(RES)
 
 # }}}1
