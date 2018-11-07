@@ -252,7 +252,7 @@ def create_process(data, name, _id, more): # {{{1
     exe_pro = psutil.Process(proc.pid)
     t_begin = time.time()
     LOCK_BEGIN.release()
-    while proc.is_alive and exe_pro.is_running():
+    while proc.is_alive() and exe_pro.is_running():
         child, exe_dict = exe_pro.children(), {}
         if exe_pro.is_running():
             exe_dict['cmdline'] = exe_pro.cmdline()
@@ -266,7 +266,7 @@ def create_process(data, name, _id, more): # {{{1
             continue
         else:
             exe_pro = child[0]
-    while exe_pro.is_running():
+    while proc.is_alive() and exe_pro.is_running():
         info = exe_pro.memory_info()
         mem_use = max(mem_use, info.rss, info.vms, info.shared, info.text, info.data)
         if mem_use > memory_limit:
