@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.34'
+VERSION = '6.35'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -253,9 +253,10 @@ def create_process(data, name, _id, more): # {{{1
     t_begin = time.time()
     LOCK_BEGIN.release()
     while proc.is_alive and exe_pro.is_running():
-        child, exe_dict = exe_pro.children(), []
+        child, exe_dict = exe_pro.children(), {}
         if exe_pro.is_running():
-            exe_dict = exe_pro.as_dict()
+            exe_dict['cmdline'] = exe_pro.cmdline()
+            # exe_dict = exe_pro.as_dict()
         else:
             break
         if exe_dict['cmdline'] == [] or exe_dict['cmdline'][0][0] == '.':
