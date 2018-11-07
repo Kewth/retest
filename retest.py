@@ -70,10 +70,10 @@ PARSER.add_argument('-d', '--default', action='store_true', help=
 PARSER.add_argument('-L', '--lemon', action='append', help=
                     'Use lemon\'s directory structure style '
                     + '(Followed by the user name and file name)')
-PARSER.add_argument('-s', '--safe', action='store_true', help=
-                    'Use thread instead of process to run safely '
-                    + 'but retest cannot get memroy or others '
-                    + 'if you use thread')
+PARSER.add_argument('-p', '--process', action='store_true', help=
+                    'Use process instead of thread to get memroy or '
+                    + 'other information but it is not safe enough '
+                    + 'even it will throw error sometimes')
 ARGS = PARSER.parse_args()
 if ARGS.version:
     print('retest', VERSION)
@@ -314,10 +314,10 @@ def main(): # {{{1
         print('\033[' + str((i-more['be'])*2) + 'B')
         print('\033[2A')
         res, t_use, mem_use, rm_wa_file = None, None, None, None
-        if ARGS.safe:
-            res, t_use, mem_use, rm_wa_file = create_thread(data, name, i, more)
-        else:
+        if ARGS.process:
             res, t_use, mem_use, rm_wa_file = create_process(data, name, i, more)
+        else:
+            res, t_use, mem_use, rm_wa_file = create_thread(data, name, i, more)
         if res == -1:
             print('\033[33;40mTime Limit Exceed   \033[0m')
             print('-> time: INF, memory:', mem_use, 'MB')
