@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.33'
+VERSION = '6.34'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -66,10 +66,14 @@ PARSER = argparse.ArgumentParser(description=HELPMSG)
 PARSER.add_argument('-v', '--version', action='store_true', help='print version')
 PARSER.add_argument('-l', '--learn', action='store_true', help='learn something')
 PARSER.add_argument('-d', '--default', action='store_true', help=
-                    'Use default config(like press enter three times)')
+                    'Use default config (like press enter three times)')
 PARSER.add_argument('-L', '--lemon', action='append', help=
-                    'Use lemon\'s directory structure style'
+                    'Use lemon\'s directory structure style '
                     + '(Followed by the user name and file name)')
+PARSER.add_argument('-s', '--safe', action='store_true', help=
+                    'Use thread instead of process to run safely '
+                    + 'but retest cannot get memroy or others '
+                    + 'if you use thread')
 ARGS = PARSER.parse_args()
 if ARGS.version:
     print('retest', VERSION)
@@ -242,7 +246,7 @@ def create_process(data, name, _id, more): # {{{1
     LOCK_BEGIN.acquire()
     proc = ProcessRun(data, name, _id, son_con)
     proc.start()
-    t_use, mem_use, res = -1, -1, 0
+    t_use, mem_use, res = -0.001, -1, 0
     max_t = more['ti']/1000
     memory_limit = more['me']*1024*1024
     exe_pro = psutil.Process(proc.pid)
@@ -293,7 +297,8 @@ def create_thread(data, name, _id, more): # {{{1
     if thread.isAlive():
         thread.kill()
         res = -1
-    return res, int(t_use*1000), rm_wa_file
+    LOCK_BEGIN.release()
+    return res, int(t_use*1000), -1, rm_wa_file
 
 def main(): # {{{1
     'Main fuction'
@@ -308,8 +313,11 @@ def main(): # {{{1
         print(str(i), ' of ', name)
         print('\033[' + str((i-more['be'])*2) + 'B')
         print('\033[2A')
-        res, t_use, mem_use, rm_wa_file = create_process(data, name, i, more)
-        # res, t_use, rm_wa_file = create_thread(data, name, i, more)
+        res, t_use, mem_use, rm_wa_file = None, None, None, None
+        if ARGS.safe:
+            res, t_use, mem_use, rm_wa_file = create_thread(data, name, i, more)
+        else:
+            res, t_use, mem_use, rm_wa_file = create_process(data, name, i, more)
         if res == -1:
             print('\033[33;40mTime Limit Exceed   \033[0m')
             print('-> time: INF, memory:', mem_use, 'MB')
