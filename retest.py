@@ -246,7 +246,7 @@ def create_process(data, name, _id, more): # {{{1
     LOCK_BEGIN.acquire()
     proc = ProcessRun(data, name, _id, son_con)
     proc.start()
-    t_use, mem_use, res = -0.001, -1, 0
+    t_use, mem_use, res = -0.001, -1024*1024, 0
     max_t = more['ti']/1000
     memory_limit = more['me']*1024*1024
     exe_pro = psutil.Process(proc.pid)
@@ -258,13 +258,13 @@ def create_process(data, name, _id, more): # {{{1
             exe_dict = exe_pro.as_dict()
         else:
             break
+        if exe_dict['cmdline'] == [] or exe_dict['cmdline'][0][0] == '.':
+            break
         if child == []:
             proc.join(0.00001)
             continue
         else:
             exe_pro = child[0]
-        if exe_dict['cmdline'] == [] or exe_dict['cmdline'][0][0] == '.':
-            break
     while exe_pro.is_running():
         info = exe_pro.memory_info()
         mem_use = max(mem_use, info.rss, info.vms, info.shared, info.text, info.data)
@@ -275,7 +275,7 @@ def create_process(data, name, _id, more): # {{{1
         if t_use > max_t:
             res = -1
             break
-        time.sleep(0.001)
+        time.sleep(0.004)
     proc.join(0.100)
     rm_wa_file = True
     if res < 0:
