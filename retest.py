@@ -9,8 +9,9 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.32'
+VERSION = '6.33'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
+LOCK_BEGIN = multiprocessing.Lock()
 
 LEARNMSG = '''
 The first line is the file name:
@@ -121,6 +122,7 @@ class ProcessRun(multiprocessing.Process): # {{{1
 
 def run_exe(data, name, _id): # {{{1
     'run the exe'
+    LOCK_BEGIN.acquire()
     os.system('cp '+data+name+str(_id)+'.in retest_dir'+str(_id)+'/'+name+'.in')
     res = os.system('cd retest_dir'+str(_id)+' ; ../own_of_retest 2> /dev/null < '+name+'.in > '+name+'.out')
     return res // 256
@@ -237,17 +239,31 @@ def Compile(files, name, more): # {{{1
 def create_process(data, name, _id, more): # {{{1
     'create a process to run the exe'
     pr_con, son_con = multiprocessing.Pipe()
+    LOCK_BEGIN.acquire()
     proc = ProcessRun(data, name, _id, son_con)
     proc.start()
-    t_begin = time.time()
-    t_use = 0
-    mem_use = 0
+    t_use, mem_use, res = -1, -1, 0
     max_t = more['ti']/1000
     memory_limit = more['me']*1024*1024
-    res = 0
-    while proc.is_alive():
-        proc_info = psutil.Process(proc.pid)
-        mem_use = max(mem_use, proc_info.memory_info().rss)
+    exe_pro = psutil.Process(proc.pid)
+    t_begin = time.time()
+    LOCK_BEGIN.release()
+    while proc.is_alive and exe_pro.is_running():
+        child, exe_dict = exe_pro.children(), []
+        if exe_pro.is_running():
+            exe_dict = exe_pro.as_dict()
+        else:
+            break
+        if child == []:
+            proc.join(0.00001)
+            continue
+        else:
+            exe_pro = child[0]
+        if exe_dict['cmdline'] == [] or exe_dict['cmdline'][0][0] == '.':
+            break
+    while exe_pro.is_running():
+        info = exe_pro.memory_info()
+        mem_use = max(mem_use, info.rss, info.vms, info.shared, info.text, info.data)
         if mem_use > memory_limit:
             res = -2
             break
@@ -255,13 +271,15 @@ def create_process(data, name, _id, more): # {{{1
         if t_use > max_t:
             res = -1
             break
-    # proc.join(more['ti']/1000)
+        time.sleep(0.001)
+    proc.join(0.100)
     rm_wa_file = True
-    if proc.is_alive():
+    if res < 0:
         proc.kill()
     else:
         res = pr_con.recv()
-    return res, int(t_use*1000), mem_use//1024//1024, rm_wa_file
+    LOCK_BEGIN.release()
+    return res, int(t_use*1000), int(mem_use/1024/1024), rm_wa_file
 
 def create_thread(data, name, _id, more): # {{{1
     'create a thread to run the exe'
@@ -295,7 +313,7 @@ def main(): # {{{1
         if res == -1:
             print('\033[33;40mTime Limit Exceed   \033[0m')
             print('-> time: INF, memory:', mem_use, 'MB')
-        if res == -2:
+        elif res == -2:
             print('\033[33;40mMemory Limit Exceed \033[0m')
             print('-> time: XXX, memory: INF')
         elif res == 127 or res == 1:
