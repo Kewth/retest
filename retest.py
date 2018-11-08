@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.36'
+VERSION = '6.37'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -256,8 +256,9 @@ def create_process(data, name, _id, more): # {{{1
     exe_pro = psutil.Process(proc.pid)
     t_begin = time.time()
     LOCK_BEGIN.release()
+    exe_dict = {}
     while proc.is_alive() and exe_pro.is_running():
-        child, exe_dict = exe_pro.children(), {}
+        child = exe_pro.children()
         # print('                        ', child)
         if exe_pro.is_running():
             exe_dict['name'] = exe_pro.name()
@@ -273,6 +274,12 @@ def create_process(data, name, _id, more): # {{{1
     # print('                         ', time.time() - t_begin)
     # print('                         ', exe_pro.name())
     # print('                         ', exe_pro.ppid())
+    if exe_dict != {} and exe_dict['name'] != 'own_of_retest':
+        proc.join(0.100)
+        proc.kill()
+        # print('find', 'process', 'failed', 'trying', 'again', '\033[1A')
+        LOCK_BEGIN.release()
+        return create_process(data, name, _id, more)
     while proc.is_alive() and exe_pro.is_running():
         info = exe_pro.memory_info()
         mem_use = max(mem_use, info.rss, info.vms, info.shared, info.text, info.data)
