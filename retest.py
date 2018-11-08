@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.35'
+VERSION = '6.36'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -33,6 +33,8 @@ The Third line is some configuration:
         me= : default=512 : the memory limit of each test whose unit is megabyte.
         o2= : default=0 : If it's set to 1, retest will turn O2 option.
         o3= : default=0 : If it's set to 1, retest will turn O3 option.
+        da= : default=/ : If it's set to /, retest will use DATADIR/FILENAME as data,
+                        else use DATADIR/(da) as data.
 
 Some usefull arguments:
     You can rough understanding by using 'retest -h' or 'retest --help'.
@@ -127,7 +129,7 @@ class ProcessRun(multiprocessing.Process): # {{{1
 def run_exe(data, name, _id): # {{{1
     'run the exe'
     LOCK_BEGIN.acquire()
-    os.system('cp '+data+name+str(_id)+'.in retest_dir'+str(_id)+'/'+name+'.in')
+    os.system('cp '+data+str(_id)+'.in retest_dir'+str(_id)+'/'+name+'.in')
     res = os.system('cd retest_dir'+str(_id)+' ; ../own_of_retest 2> /dev/null < '+name+'.in > '+name+'.out')
     return res // 256
 
@@ -203,11 +205,13 @@ def put_dic(dic, more): # {{{1
                     dic['o3'] = 0
             elif s[0] == 'me':
                 dic['me'] = int(s[1])
+            elif s[0] == 'da':
+                dic['da'] = s[1]
     return dic
 
 def put_more(more, de_more): # {{{1
     'get more from stdin and return a dict for config'
-    dic = {'out': '.out', 'ti': 1000, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, 'me': 512}
+    dic = {'out': '.out', 'ti': 1000, 'be': 0, 'en': 10, 'o2': 0, 'o3': 0, 'me': 512, 'da': '/'}
     dic = put_dic(dic, de_more)
     dic = put_dic(dic, more)
     res_str = ''
@@ -305,6 +309,10 @@ def main(): # {{{1
     'Main fuction'
     print('welcome to use retest ', VERSION)
     data, files, name, more = get_input()
+    if more['da'] != '/':
+        data += more['da']
+    else:
+        data += name
     if Compile(files, name, more) != 0:
         print('\033[33;40mCompile Error          \033[0m', '')
         return 1
@@ -330,7 +338,7 @@ def main(): # {{{1
             print('-> time: XXX, memory: XXX')
         elif res == 0:
             os.system('touch WA_' + name + str(i) + '.out')
-            command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + name + str(i) + more['out']
+            command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + str(i) + more['out']
             diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
             if diffres == 0:
                 print('\033[32;40mAccept              \033[0m')
