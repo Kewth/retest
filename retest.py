@@ -244,7 +244,7 @@ def Compile(files, name, more): # {{{1
     res = os.system('g++ '+files+name+'.cpp -o own_of_retest ' + g_option)
     return res
 
-def create_process(data, name, _id, more): # {{{1
+def create_process(data, name, _id, more, times=6): # {{{1
     'create a process to run the exe'
     pr_con, son_con = multiprocessing.Pipe()
     LOCK_BEGIN.acquire()
@@ -274,12 +274,12 @@ def create_process(data, name, _id, more): # {{{1
     # print('                         ', time.time() - t_begin)
     # print('                         ', exe_pro.name())
     # print('                         ', exe_pro.ppid())
-    if exe_dict != {} and exe_dict['name'] != 'own_of_retest':
+    if exe_dict != {} and exe_dict['name'] != 'own_of_retest' and times > 0:
         proc.join(0.100)
         proc.kill()
         # print('find', 'process', 'failed', 'trying', 'again', '\033[1A')
         LOCK_BEGIN.release()
-        return create_process(data, name, _id, more)
+        return create_process(data, name, _id, more, times-1)
     while proc.is_alive() and exe_pro.is_running():
         info = exe_pro.memory_info()
         mem_use = max(mem_use, info.rss, info.vms, info.shared, info.text, info.data)
