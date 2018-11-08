@@ -258,18 +258,21 @@ def create_process(data, name, _id, more): # {{{1
     LOCK_BEGIN.release()
     while proc.is_alive() and exe_pro.is_running():
         child, exe_dict = exe_pro.children(), {}
+        # print('                        ', child)
         if exe_pro.is_running():
-            exe_dict['cmdline'] = exe_pro.cmdline()
+            exe_dict['name'] = exe_pro.name()
             # exe_dict = exe_pro.as_dict()
         else:
             break
-        if exe_dict['cmdline'] == [] or exe_dict['cmdline'][0][0] == '.':
+        if exe_dict['name'] == 'own_of_retest':
             break
         if child == []:
             proc.join(0.00001)
-            continue
-        else:
+        elif child[0].name() != 'cp':
             exe_pro = child[0]
+    # print('                         ', time.time() - t_begin)
+    # print('                         ', exe_pro.name())
+    # print('                         ', exe_pro.ppid())
     while proc.is_alive() and exe_pro.is_running():
         info = exe_pro.memory_info()
         mem_use = max(mem_use, info.rss, info.vms, info.shared, info.text, info.data)
