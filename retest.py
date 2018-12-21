@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.39'
+VERSION = '6.40'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -244,9 +244,11 @@ def create_files(ranges): # {{{1
         for j in range(20):
             if i*20 > j*len(ranges):
                 print('—', end='')
+            else:
+                print(' ', end='')
         os.system('touch 2> /dev/null own_of_retest' + str(i) + '.out')
         os.system('mkdir -p retest_dir'+str(i))
-        print('\n\033[2A', end='')
+        print('|\n\033[2A', end='')
 
 def Compile(files, name, more): # {{{1
     'Compile source code'
@@ -342,9 +344,11 @@ def makedata(): # {{{1
         for j in range(20):
             if i*20 > j*totmake:
                 print('—', end='')
+            else:
+                print(' ', end='')
         os.system('./rd > dp_data/DATA' + str(i) + '.in')
         os.system('./std < dp_data/DATA' + str(i) + '.in > dp_data/DATA' + str(i) + '.out')
-        print('\n\033[2A', end='')
+        print('|\n\033[2A', end='')
 
 def main(): # {{{1
     'Main fuction'
