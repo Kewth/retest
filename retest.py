@@ -233,8 +233,15 @@ def put_more(more, de_more): # {{{1
 def delete_files(ranges): # {{{1
     'delete temporary files'
     for i in ranges:
+        print('delete files: ' + str((i-ranges[0])*100/len(ranges)) + '% ')
+        for j in range(20):
+            if i*20 > j*len(ranges):
+                print('—', end='')
+            else:
+                print(' ', end='')
         os.system('rm own_of_retest' + str(i) + '.out')
         os.system('rm -r retest_dir'+str(i))
+        print('|\n\033[2A', end='')
     os.system('rm own_of_retest')
 
 def create_files(ranges): # {{{1
@@ -400,7 +407,8 @@ def main(): # {{{1
         if rm_wa_file:
             os.system('rm WA_' + name + str(i) + '.out 2> /dev/null')
         print('Scores:', '%.2f' % score)
-        print('\033[' + str(3+(i-more['be']+1)*2) + 'A')
+        if i != more['en']:
+            print('\033[' + str(3+(i-more['be']+1)*2) + 'A')
     delete_files(range(more['be'], more['en']+1))
     print('\033[' + str(4+(more['en']-more['be'])*2) + 'B')
     return 0
