@@ -340,6 +340,7 @@ def makedata(): # {{{1
     os.system('g++ std.cpp -o std')
     totmake = 1000
     for i in range(totmake):
+        os.system('sleep 0.03')
         print('make files: ' + str(i*100/totmake) + '% ')
         for j in range(20):
             if i*20 > j*totmake:
