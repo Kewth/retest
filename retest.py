@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.37'
+VERSION = '6.38'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -59,6 +59,10 @@ Some usefull arguments:
         problem you want ot judge is ak, just input:
                 retest -L IAKIOI/ak
             Then input above configuration.
+    --makedata, -m:
+            Make a new data directory before it's retested.
+            Make sure rd.cpp and std.cpp are available.
+            This feature is always used to shooting.
 '''
 
 HELPMSG = '''
@@ -76,6 +80,7 @@ PARSER.add_argument('-p', '--process', action='store_true', help=
                     'Use process instead of thread to get memroy or '
                     + 'other information but it is not safe enough '
                     + 'even it will throw error sometimes')
+PARSER.add_argument('-m', '--makedata', action='store_true', help='make a data directory')
 ARGS = PARSER.parse_args()
 if ARGS.version:
     print('retest', VERSION)
@@ -152,6 +157,12 @@ def get_input(): # {{{1
         files = 'source/' + get
         data = 'data/' + get[pos: ]
         os.system('echo the files: ; ls ' + data)
+        more = input('for more config(default '+de_more+'): ')
+    elif ARGS.makedata:
+        files = input('enter the file name(default '+de_file+'): ')
+        data = 'dp_data'
+        if files == '':
+            files = de_file
         more = input('for more config(default '+de_more+'): ')
     else:
         files = input('enter the file name(default '+de_file+'): ')
@@ -315,6 +326,21 @@ def create_thread(data, name, _id, more): # {{{1
     LOCK_BEGIN.release()
     return res, int(t_use*1000), -1, rm_wa_file
 
+def makedata(): # {{{1
+    'to make data directory'
+    os.system('mkdir dp_data -p')
+    os.system('g++ rd.cpp -o rd')
+    os.system('g++ std.cpp -o std')
+    totmake = 1000
+    for i in range(totmake):
+        print('make files: ' + str(i*100/totmake) + '% ')
+        for j in range(20):
+            if i*20 > j*totmake:
+                print('—', end='')
+        os.system('./rd > dp_data/DATA' + str(i) + '.in')
+        os.system('./std < dp_data/DATA' + str(i) + '.in > dp_data/DATA' + str(i) + '.out')
+        print('\n\033[2A', end='')
+
 def main(): # {{{1
     'Main fuction'
     print('welcome to use retest ', VERSION)
@@ -370,6 +396,8 @@ def main(): # {{{1
     return 0
 
 # Begin {{{1
+if ARGS.makedata:
+    makedata()
 RES = main()
 print('Made by Kewth', '(c)')
 print('Press', 'Ctrl-c', 'to', 'forcefully', 'exit')
