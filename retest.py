@@ -9,7 +9,7 @@ import argparse
 import multiprocessing
 import psutil
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
-VERSION = '6.38'
+VERSION = '6.39'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
 LOCK_BEGIN = multiprocessing.Lock()
 
@@ -240,8 +240,13 @@ def delete_files(ranges): # {{{1
 def create_files(ranges): # {{{1
     'create temporary files'
     for i in ranges:
+        print('make files: ' + str((i-ranges[0])*100/len(ranges)) + '% ')
+        for j in range(20):
+            if i*20 > j*len(ranges):
+                print('—', end='')
         os.system('touch 2> /dev/null own_of_retest' + str(i) + '.out')
         os.system('mkdir -p retest_dir'+str(i))
+        print('\n\033[2A', end='')
 
 def Compile(files, name, more): # {{{1
     'Compile source code'
