@@ -242,6 +242,7 @@ def delete_files(ranges): # {{{1
         os.system('rm own_of_retest' + str(i) + '.out')
         os.system('rm -r retest_dir'+str(i))
         print('|\n\033[2A', end='')
+    print('\n')
     os.system('rm own_of_retest')
 
 def create_files(ranges): # {{{1
@@ -256,6 +257,7 @@ def create_files(ranges): # {{{1
         os.system('touch 2> /dev/null own_of_retest' + str(i) + '.out')
         os.system('mkdir -p retest_dir'+str(i))
         print('|\n\033[2A', end='')
+    print('\n')
 
 def Compile(files, name, more): # {{{1
     'Compile source code'
