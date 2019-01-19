@@ -8,6 +8,7 @@ import time
 import argparse
 import multiprocessing
 import psutil
+import yaml
 # last version : Date:   Wed Oct 31 16:23:36 2018 +0800
 VERSION = '6.40'
 CONFIG_FILE = os.path.expandvars('$HOME')+'/.config/retest/file.txt'
@@ -81,6 +82,7 @@ PARSER.add_argument('-p', '--process', action='store_true', help=
                     + 'other information but it is not safe enough '
                     + 'even it will throw error sometimes')
 PARSER.add_argument('-m', '--makedata', action='store_true', help='make a data directory')
+PARSER.add_argument('-y', '--yaml', action='store_true', help='use retest.yaml')
 ARGS = PARSER.parse_args()
 if ARGS.version:
     print('retest', VERSION)
@@ -164,6 +166,14 @@ def get_input(): # {{{1
         if files == '':
             files = de_file
         more = input('for more config(default '+de_more+'): ')
+    elif ARGS.yaml:
+        res_more = yaml.load(open('retest.yaml'))
+        files = res_more['file']
+        data = res_more['data']
+        if files == '':
+            files = de_file
+        if data == '':
+            data = de_data
     else:
         files = input('enter the file name(default '+de_file+'): ')
         data = input('enter the stdin/out dir name(default '+de_data+'): ')
@@ -177,7 +187,12 @@ def get_input(): # {{{1
     Out = open(CONFIG_FILE, mode='w')
     Out.write(files + '\n')
     Out.write(data + '\n')
-    res_more, res_str = put_more(more.split(' '), de_more.split(' '))
+    if ARGS.yaml:
+        res_str = ''
+        for i in res_more:
+            res_str += i + '=' + str(res_more[i]) + '  '
+    else:
+        res_more, res_str = put_more(more.split(' '), de_more.split(' '))
     Out.write(res_str + '\n')
     Out.close()
     if data[-1] != '/':
