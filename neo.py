@@ -2,8 +2,9 @@
 
 import sys
 import os
-import yaml
 import shutil
+import argparse
+import yaml
 import colorama
 
 def read_data(data):
@@ -44,7 +45,7 @@ def get_config():
     try:
         config_file = open('retest.yaml', 'r')
     except FileNotFoundError:
-        error_exit('No retest.yaml was found')
+        error_exit('No retest.yaml was found, input ntest -h to get help')
     current_dict = yaml.load(config_file)
     for key in current_dict:
         res[key] = current_dict[key]
@@ -118,7 +119,46 @@ def make_dir():
         shutil.rmtree('retest_dir')
     os.makedirs('retest_dir')
 
+def init_args():
+    parser = argparse.ArgumentParser(description='''
+A retest command which is like lemon but run in terminal.
+And this is the upgraded version of retest
+''')
+    parser.add_argument('-l', '--learn', action='store_true', \
+            help='learn how to use ntest')
+    return parser.parse_args()
+
+def learn():
+    print('''
+How to write retest.yaml?
+    The file retest.yaml is used by ntest to judge.
+    You can get a full example on ~/.config/retest/example.yaml .
+
+    source:
+        The source code you want to judge.
+
+    data:
+        The directory where include all data files.
+
+    time:
+        The time limit of each judgement.
+
+    difftime:
+        The time limit of checking answer.
+
+Some usefull arguments:
+    You can rough understanding by using 'ntest -h' or 'ntest --help'.
+
+    --learn, -l:
+        Print this message to learn how to use ntest.
+        To display this better, you can use 'less' command:
+            ntest -l | less
+    ''')
+
 def main():
+    args = init_args()
+    if args.learn:
+        learn()
     make_dir()
     config = get_config()
     if not config.get('source'):
