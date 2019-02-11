@@ -1,0 +1,4 @@
+source: test.cpp
+data: data/test/
+time: 1000
+difftime: 1000
