@@ -7,6 +7,8 @@ import argparse
 import yaml
 import colorama
 
+PATH = './retest_dir'
+
 def read_data(data):
     files = os.listdir(data)
     num = 0
@@ -22,10 +24,13 @@ def read_data(data):
             if outname == '':
                 continue
             num += 1
-            os.system('ln -s ../{}{}{} retest_dir/{}.in'.format( \
-                    data, name, '.in', num))
-            os.system('ln -s ../{}{}{} retest_dir/{}.ans'.format( \
-                    data, name, outname, num))
+            up_path = '.'
+            for j in range(PATH.count('/')):
+                up_path += '/..'
+            os.system('ln -s {}/{}{}{} {}/{}.in'.format( \
+                    up_path, data, name, '.in', PATH, num))
+            os.system('ln -s {}/{}{}{} {}/{}.ans'.format( \
+                    up_path, data, name, outname, PATH, num))
             res.append(name)
     return res
 
@@ -48,6 +53,7 @@ def get_config():
         error_exit('No retest.yaml was found, input ntest -h to get help')
     current_dict = yaml.load(config_file)
     for key in current_dict:
+        # 用全局配置更新局部配置
         res[key] = current_dict[key]
     return res
 
@@ -70,48 +76,13 @@ def print_info(typ, i):
                 'Output Limit Error', colorama.Style.RESET_ALL)
 
 def compile_cpp(name):
-    res = os.system('g++ {} -o retest_dir/exe'.format(name))
+    res = os.system('g++ {} -o {}/exe'.format(name, PATH))
     if res != 0:
         error_exit('Compile Error')
 
-def judge(num, config):
-    timeout = os.system('timeout 0.1 sleep 1')
-    print('Judging')
-    os.chdir('retest_dir')
-    res = 0
-    time_limit = config.get('time')
-    difftime = config.get('difftime')
-    if not time_limit:
-        time_limit = 1000
-    if not difftime:
-        difftime = 1000
-    for i in range(1, num):
-        runres = os.system( \
-                'timeout {0} ./exe < {1}.in > {1}.out'.format( \
-                time_limit / 1000, i))
-        if runres == timeout:
-            print_info('TLE', i)
-            continue
-        elif runres != 0:
-            print_info('RE', i)
-            print('exe return {}'.format(runres))
-            continue
-        diffres = os.system( \
-                'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
-                difftime / 1000, i))
-        if diffres == timeout:
-            print_info('OLE', i)
-            print('Output toolong', file=open('res{}'.format(i), 'a'))
-        elif diffres == 0:
-            print_info('AC', i)
-            print('Accept', file=open('res{}'.format(i), 'w'))
-            res += 100 / (num - 1)
-        else:
-            print_info('WA', i)
-    return int(res)
-
 def make_dir():
     if os.path.exists('retest_dir'):
+        warning('The directory {} has exist'.format('retest_dir'))
         shutil.rmtree('retest_dir')
     os.makedirs('retest_dir')
 
@@ -156,22 +127,81 @@ Some usefull arguments:
     ''')
 # }}}
 
+def check_config(config):
+    if not config.get('source'):
+        error_exit('No source was read')
+    if not config.get('data'):
+        error_exit('No data was read')
+    if not config.get('time'):
+        config['time'] = 1000
+    if not config.get('difftime'):
+        config['difftime'] = 1000
+    if config.get('filetype') == 'cpp':
+        compile_cpp(config['source'])
+    else:
+        os.system('cp {} {}/exe'.format(config['source'], PATH))
+
+def judge(config):
+    check_config(config)
+    files = read_data(config['data'])
+    num = len(files)
+    timeout = os.system('timeout 0.1 sleep 1')
+    res = 0
+    os.chdir(PATH)
+    for i in range(1, num):
+        runres = os.system( \
+                'timeout {0} ./exe < {1}.in > {1}.out'.format( \
+                config['time'] / 1000, i))
+        if runres == timeout:
+            print_info('TLE', i)
+            continue
+        elif runres != 0:
+            print_info('RE', i)
+            print('exe return {}'.format(runres))
+            continue
+        diffres = os.system( \
+                'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
+                config['difftime'] / 1000, i))
+        if diffres == timeout:
+            print_info('OLE', i)
+            print('Output toolong', file=open('res{}'.format(i), 'a'))
+        elif diffres == 0:
+            print_info('AC', i)
+            print('Accept', file=open('res{}'.format(i), 'w'))
+            res += 100 / (num - 1)
+        else:
+            print_info('WA', i)
+    for i in range(PATH.count('/')):
+        os.chdir('..')
+    return int(res)
+
 def main():
     args = init_args()
     if args.learn:
         learn()
-    make_dir()
     config = get_config()
-    if not config.get('source'):
-        error_exit('No source was read')
-    if config.get('filetype') == 'cpp':
-        compile_cpp(config['source'])
+    now = 0
+    while config.get('T{}'.format(now + 1)):
+        now += 1
+    make_dir()
+    if now != 0:
+        # 有多个程序待评测
+        score = 0
+        for i in range(1, now + 1):
+            problem = 'T{}'.format(i)
+            global PATH
+            PATH = './retest_dir/' + problem
+            print('Judging {}'.format(problem))
+            os.makedirs('retest_dir/' + problem)
+            sub_config = config[problem]
+            for key in config:
+                # 用全局配置更新局部配置
+                if not sub_config.get(key):
+                    sub_config[key] = config[key]
+            score += judge(sub_config)
     else:
-        os.system('cp {} retest_dir/exe'.format(config['source']))
-    if not config.get('data'):
-        error_exit('No data was read')
-    files = read_data(config['data'])
-    score = judge(len(files), config)
+        print('Judging')
+        score = judge(config)
     print('score: {}'.format(score))
     return 0
 
