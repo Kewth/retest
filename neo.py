@@ -97,19 +97,14 @@ def judge(num, config):
             print('exe return {}'.format(runres))
             continue
         diffres = os.system( \
-                'timeout {0} icdiff {1}.out {1}.ans > diff{1}'.format( \
+                'timeout {0} diff -b -B {1}.out {1}.ans > diff{1}'.format( \
                 difftime / 1000, i))
         if diffres == timeout:
-            warning('Output too long')
-            os.system('echo Output too long > diff{}'.format(i))
-            diffres = os.system( \
-                    'timeout {0} diff {1}.out {1}.ans >> diff{1}'.format( \
-                    difftime / 1000, i))
-        if diffres == 0:
+            print_info('OLE', i)
+            os.system('echo Output too long >> diff{}'.format(i))
+        elif diffres == 0:
             print_info('AC', i)
             res += 100 / num
-        elif diffres == timeout:
-            print_info('OLE', i)
         else:
             print_info('WA', i)
     return int(res)
