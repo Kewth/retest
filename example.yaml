@@ -1,4 +1,13 @@
-source: test.cpp
-data: data/test/
 time: 1000
 difftime: 1000
+T1:
+    source: a.cpp
+    data: data/A
+T2:
+    source: b.cpp
+    data: data/B
+T3:
+    source: c.py
+    data: data/B
+    time: 2000
+
