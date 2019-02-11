@@ -128,7 +128,7 @@ And this is the upgraded version of retest
             help='learn how to use ntest')
     return parser.parse_args()
 
-def learn():
+def learn(): # {{{
     print('''
 How to write retest.yaml?
     The file retest.yaml is used by ntest to judge.
@@ -158,6 +158,7 @@ Some usefull arguments:
         To display this better, you can use 'less' command:
             ntest -l | less
     ''')
+# }}}
 
 def main():
     args = init_args()
