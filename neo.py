@@ -51,7 +51,8 @@ def get_config():
         res[key] = current_dict[key]
     return res
 
-def print_info(typ):
+def print_info(typ, i):
+    print('No.{:<4d} '.format(i), end='')
     if typ == 'AC':
         print(colorama.Back.GREEN, colorama.Fore.WHITE, \
                 'Accept            ', colorama.Style.RESET_ALL)
@@ -85,15 +86,14 @@ def judge(num, config):
     if not difftime:
         difftime = 1000
     for i in range(1, num):
-        print('The {}th judge:'.format(i))
         runres = os.system( \
                 'timeout {0} ./exe < {1}.in > {1}.out'.format( \
                 time_limit / 100, i))
         if runres == timeout:
-            print_info('TLE')
+            print_info('TLE', i)
             continue
         elif runres != 0:
-            print_info('RE')
+            print_info('RE', i)
             print('exe return {}'.format(runres))
             continue
         diffres = os.system( \
@@ -106,12 +106,12 @@ def judge(num, config):
                     'timeout {0} diff {1}.out {1}.ans >> diff{1}'.format( \
                     difftime / 1000, i))
         if diffres == 0:
-            print_info('AC')
+            print_info('AC', i)
             res += 100 / num
         elif diffres == timeout:
-            print_info('OLE')
+            print_info('OLE', i)
         else:
-            print_info('WA')
+            print_info('WA', i)
     return int(res)
 
 def make_dir():
