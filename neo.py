@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+'新的 retest'
 
 import sys
 import os
@@ -10,6 +11,10 @@ import colorama
 PATH = './retest_dir'
 
 def read_data(data):
+    '''
+    在工作目录创建输入输出文件（源于 [data] ）
+    返回所有数据文件的名字
+    '''
     files = os.listdir(data)
     num = 0
     res = [None]
@@ -27,23 +32,30 @@ def read_data(data):
             up_path = '.'
             for j in range(PATH.count('/')):
                 up_path += '/..'
-            os.system('ln -s {}/{}{}{} {}/{}.in'.format( \
+            os.system('ln -s {}/{}/{}{} {}/{}.in'.format( \
                     up_path, data, name, '.in', PATH, num))
-            os.system('ln -s {}/{}{}{} {}/{}.ans'.format( \
+            os.system('ln -s {}/{}/{}{} {}/{}.ans'.format( \
                     up_path, data, name, outname, PATH, num))
             res.append(name)
     return res
 
 def error_exit(info):
-    print(colorama.Fore.RED, info, colorama.Fore.RESET, file=sys.stderr)
+    '打印错误信息并退出'
+    print(colorama.Fore.RED, info, \
+            colorama.Fore.RESET, file=sys.stderr)
     shutil.rmtree('retest_dir')
     sys.exit(1)
 
 def warning(info):
+    '打印警告信息'
     print(colorama.Fore.YELLOW, 'Warning: ' + info, \
             colorama.Fore.RESET, file=sys.stderr)
 
 def get_config():
+    '''
+    获取配置信息
+    返回一个字典
+    '''
     home_dir = os.path.expandvars('$HOME') + '/.config/retest/'
     config_file = open(home_dir + 'retest.yaml', 'r')
     res = yaml.load(config_file)
@@ -58,6 +70,7 @@ def get_config():
     return res
 
 def print_info(typ, i):
+    '打印 [i] 号测试点信息（类型为 [typ]）'
     print('No.{:<4d} '.format(i), end='')
     if typ == 'AC':
         print(colorama.Back.GREEN, colorama.Fore.WHITE, \
@@ -76,17 +89,20 @@ def print_info(typ, i):
                 'Output Limit Error', colorama.Style.RESET_ALL)
 
 def compile_cpp(name):
+    '编译 c++ 程序到工作目录'
     res = os.system('g++ {} -o {}/exe'.format(name, PATH))
     if res != 0:
         error_exit('Compile Error')
 
 def make_dir():
+    '强行创建工作基目录'
     if os.path.exists('retest_dir'):
         warning('The directory {} has exist'.format('retest_dir'))
         shutil.rmtree('retest_dir')
     os.makedirs('retest_dir')
 
 def init_args():
+    '初始化参数'
     parser = argparse.ArgumentParser(description='''
 A retest command which is like lemon but run in terminal.
 And this is the upgraded version of retest
@@ -96,6 +112,7 @@ And this is the upgraded version of retest
     return parser.parse_args()
 
 def learn(): # {{{
+    '--learn 的信息'
     print('''
 How to write retest.yaml?
     The file retest.yaml is used by ntest to judge.
@@ -128,6 +145,7 @@ Some usefull arguments:
 # }}}
 
 def check_config(config):
+    '检查配置字典 [config] 的合法性'
     if not config.get('source'):
         error_exit('No source was read')
     if not config.get('data'):
@@ -136,12 +154,17 @@ def check_config(config):
         config['time'] = 1000
     if not config.get('difftime'):
         config['difftime'] = 1000
+    # 在工作目录制造用于运行的 exe
     if config.get('filetype') == 'cpp':
         compile_cpp(config['source'])
     else:
         os.system('cp {} {}/exe'.format(config['source'], PATH))
 
 def judge(config):
+    '''
+    评测一道题目，以 [config] 为配置
+    返回该题目的分数
+    '''
     check_config(config)
     files = read_data(config['data'])
     num = len(files)
@@ -149,26 +172,33 @@ def judge(config):
     res = 0
     os.chdir(PATH)
     for i in range(1, num):
+        # 评测单个测试点
         runres = os.system( \
                 'timeout {0} ./exe < {1}.in > {1}.out'.format( \
                 config['time'] / 1000, i))
+        # 程序超时（没有输出）
         if runres == timeout:
             print_info('TLE', i)
             continue
+        # 程序运行时错误（没有输出）
         elif runres != 0:
             print_info('RE', i)
             print('exe return {}'.format(runres))
             continue
+        # 比较输出文件与标准答案
         diffres = os.system( \
                 'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
                 config['difftime'] / 1000, i))
+        # 比较过程超时
         if diffres == timeout:
             print_info('OLE', i)
             print('Output toolong', file=open('res{}'.format(i), 'a'))
+        # 正确
         elif diffres == 0:
             print_info('AC', i)
             print('Accept', file=open('res{}'.format(i), 'w'))
             res += 100 / (num - 1)
+        # 错误
         else:
             print_info('WA', i)
     for i in range(PATH.count('/')):
@@ -176,6 +206,7 @@ def judge(config):
     return int(res)
 
 def main():
+    '主函数'
     args = init_args()
     if args.learn:
         learn()
