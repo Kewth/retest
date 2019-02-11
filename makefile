@@ -1,3 +1,17 @@
+/usr/bin/ntest: neo.py ninit
+	sudo cp neo.py /usr/bin/ntest
+	sudo chmod +x /usr/bin/ntest
+
+ninit: ~/.config ~/.config/retest
+	cp retest.yaml ~/.config/retest
+	touch ninit
+
+~/.config:
+	mkdir ~/.config -p
+
+~/.config/retest:
+	mkdir ~/.config/retest -p
+
 /usr/bin/retest: retest init
 	sudo cp retest /usr/bin
 
