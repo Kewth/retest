@@ -408,7 +408,7 @@ def main(): # {{{1
             print('-> time: XXX, memory: XXX')
         elif res == 0:
             os.system('touch WA_' + name + str(i) + '.out')
-            command = 'diff -b -B own_of_retest' + str(i) + '.out ' + data + str(i) + more['out']
+            command = 'timeout 1s icdiff own_of_retest' + str(i) + '.out ' + data + str(i) + more['out']
             diffres = os.system(command + ' > WA_' + name + str(i) + '.out')
             if diffres == 0:
                 print('\033[32;40mAccept              \033[0m')
