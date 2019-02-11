@@ -88,7 +88,7 @@ def judge(num, config):
     for i in range(1, num):
         runres = os.system( \
                 'timeout {0} ./exe < {1}.in > {1}.out'.format( \
-                time_limit / 100, i))
+                time_limit / 1000, i))
         if runres == timeout:
             print_info('TLE', i)
             continue
