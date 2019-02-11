@@ -134,6 +134,18 @@ How to write retest.yaml?
         Its unit is millisecond.
         It's set to 1000 by default.
 
+    If you want to judge more problems, you can set 'Tn' sub configura
+  tion.
+        For example:
+            time: 1000
+            T1:
+                source: a.cpp
+                data: data/A
+            T2:
+                source: b.cpp
+                data: data/B
+        It will judge 2 problems in one time.
+
 Some usefull arguments:
     You can rough understanding by using 'ntest -h' or 'ntest --help'.
 
