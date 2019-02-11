@@ -104,7 +104,7 @@ def judge(num, config):
             os.system('echo Output too long >> diff{}'.format(i))
         elif diffres == 0:
             print_info('AC', i)
-            res += 100 / num
+            res += 100 / (num - 1)
         else:
             print_info('WA', i)
     return int(res)
