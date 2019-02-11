@@ -134,17 +134,21 @@ How to write retest.yaml?
     The file retest.yaml is used by ntest to judge.
     You can get a full example on ~/.config/retest/example.yaml .
 
-    source:
+    source: (required)
         The source code you want to judge.
 
-    data:
+    data: (required)
         The directory where include all data files.
 
     time:
         The time limit of each judgement.
+        Its unit is millisecond.
+        It's set to 1000 by default.
 
     difftime:
         The time limit of checking answer.
+        Its unit is millisecond.
+        It's set to 1000 by default.
 
 Some usefull arguments:
     You can rough understanding by using 'ntest -h' or 'ntest --help'.
