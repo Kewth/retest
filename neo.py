@@ -97,13 +97,14 @@ def judge(num, config):
             print('exe return {}'.format(runres))
             continue
         diffres = os.system( \
-                'timeout {0} diff -b -B {1}.out {1}.ans > diff{1}'.format( \
+                'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
                 difftime / 1000, i))
         if diffres == timeout:
             print_info('OLE', i)
-            os.system('echo Output too long >> diff{}'.format(i))
+            print('Output toolong', file=open('res{}'.format(i), 'a'))
         elif diffres == 0:
             print_info('AC', i)
+            print('Accept', file=open('res{}'.format(i), 'w'))
             res += 100 / (num - 1)
         else:
             print_info('WA', i)
