@@ -134,6 +134,12 @@ How to write retest.yaml?
         Its unit is millisecond.
         It's set to 1000 by default.
 
+    input:
+        The file where exe get input.
+
+    output:
+        The file where exe get output.
+
     If you want to judge more problems, you can set 'Tn' sub configura
   tion.
         For example:
