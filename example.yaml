@@ -3,6 +3,8 @@ difftime: 1000
 T1:
     source: a.cpp
     data: data/A
+    input: a.in
+    output: a.out
 T2:
     source: b.cpp
     data: data/B
