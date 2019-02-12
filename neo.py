@@ -188,28 +188,6 @@ def check_config(config):
     else:
         os.system('cp {} {}/exe'.format(config['source'], PATH))
 
-def check_ans_tradition(config, i):
-    '''
-    比较输出文件与标准答案（编号为 [i] ），以 [config] 为配置
-    返回是否正确
-    '''
-    diffres = os.system( \
-            'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
-            config['difftime'] / 1000, i))
-    # 比较过程超时
-    if diffres == TIMEOUT:
-        print_info('OLE', i)
-        print('Output toolong', file=open('res{}'.format(i), 'a'))
-    # 正确
-    elif diffres == 0:
-        print_info('AC', i)
-        print('Accept', file=open('res{}'.format(i), 'w'))
-        return True
-    # 错误
-    else:
-        print_info('WA', i)
-    return False
-
 def check_ans_spj(config, i, score):
     '''
     用 spj 进行测试（测试点编号为 [i] ）
@@ -270,11 +248,7 @@ def judge(config):
             print_info('RE', i)
             print('exe return {}'.format(runres))
             continue
-        if config['mode'] == 'tradition' \
-                and check_ans_tradition(config, i):
-            res += 100 / (num - 1)
-        elif config['mode'] == 'spj':
-            res += check_ans_spj(config, i, 100 / (num - 1))
+        res += check_ans_spj(config, i, 100 / (num - 1))
     for i in range(PATH.count('/')):
         os.chdir('..')
     return int(res)
