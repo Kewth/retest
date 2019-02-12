@@ -227,7 +227,7 @@ def check_ans_spj(config, i, score):
     else:
         print_info('PA', i)
     print('\nMessage from spj:', file=open('res{}'.format(i), 'a'))
-    os.system('cat sp.get >> res{}'.format(i))
+    os.system('cat sp.log >> res{}'.format(i))
     return get
 
 def judge(config):
