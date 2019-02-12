@@ -277,6 +277,7 @@ def main():
     args = init_args()
     if args.learn:
         learn()
+        return 0
     config = get_config()
     now = 0
     while config.get('T{}'.format(now + 1)):
