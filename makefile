@@ -4,6 +4,7 @@
 
 ninit: ~/.config ~/.config/retest
 	cp retest.yaml ~/.config/retest
+	cp spj ~/.config/retest
 	touch ninit
 
 ~/.config:
