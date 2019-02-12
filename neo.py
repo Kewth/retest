@@ -112,12 +112,27 @@ def compile_cpp(name, exe, compiler):
     if res != 0:
         error_exit('Compile Error')
 
-def make_dir():
-    '强行创建工作基目录'
-    if os.path.exists('retest_dir'):
-        warning('The directory {} has exist'.format('retest_dir'))
-        shutil.rmtree('retest_dir')
-    os.makedirs('retest_dir')
+def compile_source(name, exe):
+    '将 [name] 转换为可执行文件到工作目录的 [exe]'
+    if len(name) > 4 and name[-4:] == '.cpp':
+        res = os.system( \
+                'g++ {} -o {}/{}'.format(name, PATH, exe))
+    elif len(name) > 2 and name[-2:] == '.c':
+        res = os.system( \
+                'gcc {} -o {}/{}'.format(name, PATH, exe))
+    else:
+        res = os.system( \
+                'cp {0} {1}/{2} ; chmod {1}/{2}'.format( \
+                name, PATH, exe))
+    if res != 0:
+        error_exit('Compile Error')
+
+def make_dir(dir_name='retest_dir'):
+    '强行创建基目录 [dir_name]'
+    if os.path.exists(dir_name):
+        warning('The directory {} has exist'.format(dir_name))
+        shutil.rmtree(dir_name)
+    os.makedirs(dir_name)
 
 def init_args():
     '初始化参数'
@@ -189,12 +204,34 @@ Some usefull arguments:
     ''')
 # }}}
 
+def make_data(config, times=100):
+    '以 [config] 配置制造数据'
+    data = config['data']
+    config['data'] = 'dp_data'
+    # while os.path.exists(config['data']):
+    #     config['data'] += '_'
+    make_dir(config['data'])
+    if not data.get('std'):
+        error_exit('No data.std was read')
+    if not data.get('rand'):
+        error_exit('No data.rand was read')
+    compile_source(data['std'], 'std')
+    compile_source(data['rand'], 'rand')
+    for i in range(times):
+        print(i + 1, '/', times)
+        os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
+        os.system('{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
+                PATH, config['data'], i))
+        print(colorama.Cursor.UP(), end='')
+
 def check_config(config):
     '检查配置字典 [config] 的合法性'
     if not config.get('source'):
         error_exit('No source was read')
     if not config.get('data'):
         error_exit('No data was read')
+    if config['data'].__class__ is dict:
+        make_data(config)
     if not config.get('time'):
         config['time'] = 1000
     if not config.get('difftime'):
