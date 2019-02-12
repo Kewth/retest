@@ -88,6 +88,12 @@ def print_info(typ, i):
     elif typ == 'OLE':
         print(colorama.Back.WHITE, colorama.Fore.RED, \
                 'Output Limit Error', colorama.Style.RESET_ALL)
+    elif typ == 'UKE':
+        print(colorama.Back.BLACK, colorama.Fore.RED, \
+                'Unknown Error     ', colorama.Style.RESET_ALL)
+    elif typ == 'PA':
+        print(colorama.Back.GREEN, colorama.Fore.RED, \
+                'Partially Accept  ', colorama.Style.RESET_ALL)
 
 def compile_cpp(name, exe, compiler):
     '用 [compiler] 编译程序 [name] 到工作目录的 [exe]'
@@ -219,7 +225,7 @@ def check_ans_spj(config, i, score):
         print_info('WA', i)
     # 部分正确
     else:
-        print_info('SAC', i)
+        print_info('PA', i)
     return get
 
 def judge(config):
