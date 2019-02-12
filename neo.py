@@ -173,8 +173,13 @@ def check_config(config):
         config['time'] = 1000
     if not config.get('difftime'):
         config['difftime'] = 1000
-    if not config.get('mode'):
-        config['mode'] = 'tradition'
+    # if not config.get('mode'):
+    #     config['mode'] = 'tradition'
+    # 在工作目录制造用于评分的 spj
+    if not config.get('spj'):
+        os.system('cp ~/.config/retest/spj {}/spj'.format(PATH))
+    else:
+        os.system('cp {} {}/spj'.format(config['spj'], PATH))
     # 在工作目录制造用于运行的 exe
     if config.get('filetype') == 'cpp':
         compile_cpp(config['source'])
@@ -202,6 +207,36 @@ def check_ans_tradition(config, i):
     else:
         print_info('WA', i)
     return False
+
+def check_ans_spj(config, i, score):
+    '''
+    用 spj 进行测试（测试点编号为 [i] ）
+    以 [config] 为配置
+    返回得分
+    '''
+    spres = os.system( \
+            'timeout {2} ./spj \
+            {0}.in {0}.out {0}.ans {1} sp.get sp.log'.format( \
+            i, score, config['difftime']))
+    # 评分过程超时
+    if spres == TIMEOUT:
+        print_info('OLE', i)
+        print('Output too long', file=open('res{}'.format(i), 'a'))
+    # 评分过程错误
+    elif spres != 0:
+        print_info('UKE', i)
+    get = float(open('sp.get', 'r').readline()[:-1])
+    # 正确
+    if get == score:
+        print_info('AC', i)
+        print('Accept', file=open('res{}'.format(i), 'w'))
+    # 错误
+    elif get == 0:
+        print_info('WA', i)
+    # 部分正确
+    else:
+        print_info('SAC', i)
+    return get
 
 def judge(config):
     '''
@@ -236,6 +271,8 @@ def judge(config):
         if config['mode'] == 'tradition' \
                 and check_ans_tradition(config, i):
             res += 100 / (num - 1)
+        elif config['mode'] == 'spj':
+            res += check_ans_spj(config, i, 100 / (num - 1))
     for i in range(PATH.count('/')):
         os.chdir('..')
     return int(res)
