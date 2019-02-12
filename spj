@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+
+import os
+import sys
+
+def main():
+    # input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    answer_file = sys.argv[3]
+    score = sys.argv[4]
+    score_output = sys.argv[5]
+    # log_file = sys.argv[6]
+    diffres = os.system( \
+            'diff -b -B {} {}'.format( \
+            output_file, answer_file))
+    if diffres == 0:
+        print(score, file=open(score_output, 'w'))
+    else:
+        print(0, file=open(score_output, 'w'))
+    return 0
+
+sys.exit(main())
