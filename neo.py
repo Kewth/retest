@@ -89,9 +89,9 @@ def print_info(typ, i):
         print(colorama.Back.WHITE, colorama.Fore.RED, \
                 'Output Limit Error', colorama.Style.RESET_ALL)
 
-def compile_cpp(name, compiler):
-    '编译 c++ 程序到工作目录'
-    res = os.system('{} {} -o {}/exe'.format(compiler, name, PATH))
+def compile_cpp(name, exe, compiler):
+    '用 [compiler] 编译程序 [name] 到工作目录的 [exe]'
+    res = os.system('{} {} -o {}/{}'.format(compiler, name, PATH, exe))
     if res != 0:
         error_exit('Compile Error')
 
@@ -178,13 +178,17 @@ def check_config(config):
     # 在工作目录制造用于评分的 spj
     if not config.get('spj'):
         os.system('cp ~/.config/retest/spj {}/spj'.format(PATH))
+    elif len(config['spj']) > 4 and config['spj'][-4:] == '.cpp':
+        compile_cpp(config['spj'], 'spj', 'g++')
+    elif len(config['spj']) > 2 and config['spj'][-2:] == '.c':
+        compile_cpp(config['spj'], 'spj', 'gcc')
     else:
         os.system('cp {} {}/spj'.format(config['spj'], PATH))
     # 在工作目录制造用于运行的 exe
     if len(config['source']) > 4 and config['source'][-4:] == '.cpp':
-        compile_cpp(config['source'], 'g++')
+        compile_cpp(config['source'], 'exe', 'g++')
     elif len(config['source']) > 2 and config['source'][-2:] == '.c':
-        compile_cpp(config['source'], 'gcc')
+        compile_cpp(config['source'], 'exe', 'gcc')
     else:
         os.system('cp {} {}/exe'.format(config['source'], PATH))
 
