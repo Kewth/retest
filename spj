@@ -9,10 +9,10 @@ def main():
     answer_file = sys.argv[3]
     score = sys.argv[4]
     score_output = sys.argv[5]
-    # log_file = sys.argv[6]
+    log_file = sys.argv[6]
     diffres = os.system( \
-            'diff -b -B {} {} > /dev/null'.format( \
-            output_file, answer_file))
+            'diff -b -B {} {} > {}'.format( \
+            output_file, answer_file, log_file))
     if diffres == 0:
         print(score, file=open(score_output, 'w'))
     else:
