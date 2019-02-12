@@ -116,6 +116,8 @@ And this is the upgraded version of retest
 ''')
     parser.add_argument('-l', '--learn', action='store_true', \
             help='learn how to use ntest')
+    parser.add_argument('-u', '--use', action='append', \
+            help='specify the subconfig')
     return parser.parse_args()
 
 def learn(): # {{{
@@ -279,6 +281,10 @@ def main():
         learn()
         return 0
     config = get_config()
+    if args.use:
+        config = config.get(args.use[0])
+        if not config:
+            error_exit('--use: No such a subconfig')
     now = 0
     while config.get('T{}'.format(now + 1)):
         now += 1
