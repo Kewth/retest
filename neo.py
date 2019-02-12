@@ -200,7 +200,7 @@ def check_config(config):
 
 def check_ans_spj(config, i, score):
     '''
-    用 spj 进行测试（测试点编号为 [i] ）
+    在工作目录用 spj 进行测试（测试点编号为 [i] ）
     以 [config] 为配置
     返回得分
     '''
@@ -226,6 +226,8 @@ def check_ans_spj(config, i, score):
     # 部分正确
     else:
         print_info('PA', i)
+    print('\nMessage from spj:', file=open('res{}'.format(i), 'a'))
+    os.system('cat sp.get >> res{}'.format(i))
     return get
 
 def judge(config):
