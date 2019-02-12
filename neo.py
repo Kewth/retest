@@ -7,6 +7,7 @@ import shutil
 import argparse
 import yaml
 import colorama
+import time
 
 PATH = './retest_dir'
 TIMEOUT = os.system('timeout 0.1 sleep 1')
@@ -70,30 +71,40 @@ def get_config():
         res[key] = current_dict[key]
     return res
 
-def print_info(typ, i):
+def print_info(typ, i, use_time=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
     print('No.{:<4d} '.format(i), end='')
+    more_info = ''
+    if use_time:
+        more_info += 'RunTime: {}ms'.format(int(use_time * 1000))
     if typ == 'AC':
-        print(colorama.Back.GREEN, colorama.Fore.WHITE, \
-                'Accept            ', colorama.Style.RESET_ALL)
+        print('{}{}Accept              {} {}'.format( \
+                colorama.Back.GREEN, colorama.Fore.WHITE, \
+                colorama.Style.RESET_ALL, more_info))
     elif typ == 'WA':
-        print(colorama.Back.RED, colorama.Fore.WHITE, \
-                'Wrong Answer      ', colorama.Style.RESET_ALL)
+        print('{}{}Wrong Answer        {} {}'.format( \
+                colorama.Back.RED, colorama.Fore.WHITE, \
+                colorama.Style.RESET_ALL, more_info))
     elif typ == 'RE':
-        print(colorama.Back.MAGENTA, colorama.Fore.WHITE, \
-                'Runtime Error     ', colorama.Style.RESET_ALL)
+        print('{}{}Runtime Error       {} {}'.format( \
+                colorama.Back.MAGENTA, colorama.Fore.WHITE, \
+                colorama.Style.RESET_ALL, more_info))
     elif typ == 'TLE':
-        print(colorama.Back.WHITE, colorama.Fore.YELLOW, \
-                'Time Limit Error  ', colorama.Style.RESET_ALL)
+        print('{}{}Time Limit Error    {} {}'.format( \
+                colorama.Back.WHITE, colorama.Fore.YELLOW, \
+                colorama.Style.RESET_ALL, more_info))
     elif typ == 'OLE':
-        print(colorama.Back.WHITE, colorama.Fore.RED, \
-                'Output Limit Error', colorama.Style.RESET_ALL)
+        print('{}{}Output Limit Error  {} {}'.format( \
+                colorama.Back.WHITE, colorama.Fore.RED, \
+                colorama.Style.RESET_ALL, more_info))
     elif typ == 'UKE':
-        print(colorama.Back.BLACK, colorama.Fore.RED, \
-                'Unknown Error     ', colorama.Style.RESET_ALL)
+        print('{}{}Unknown Error       {} {}'.format( \
+                colorama.Back.BLACK, colorama.Fore.RED, \
+                colorama.Style.RESET_ALL, more_info))
     elif typ == 'PA':
-        print(colorama.Back.GREEN, colorama.Fore.RED, \
-                'Partially Accept  ', colorama.Style.RESET_ALL)
+        print('{}{}Partially Accept    {} {}'.format( \
+                colorama.Back.GREEN, colorama.Fore.RED, \
+                colorama.Style.RESET_ALL, more_info))
 
 def compile_cpp(name, exe, compiler):
     '用 [compiler] 编译程序 [name] 到工作目录的 [exe]'
@@ -225,16 +236,6 @@ def check_ans_spj(config, i, score):
     elif spres != 0:
         print_info('UKE', i)
     get = float(open('sp.get', 'r').readline()[:-1])
-    # 正确
-    if get == score:
-        print_info('AC', i)
-        print('Accept', file=open('res{}'.format(i), 'w'))
-    # 错误
-    elif get == 0:
-        print_info('WA', i)
-    # 部分正确
-    else:
-        print_info('PA', i)
     print('\nMessage from spj:', file=open('res{}'.format(i), 'a'))
     os.system('cat sp.log >> res{}'.format(i))
     return get
@@ -257,9 +258,11 @@ def judge(config):
         if config.get('output'):
             os.system('ln -sf {}.out {}'.format( \
                     i, config['output']))
+        begin_time = time.time()
         runres = os.system( \
                 'timeout {0} ./exe < {1}.in > {1}.out'.format( \
                 config['time'] / 1000, i))
+        use_time = time.time() - begin_time
         # 程序超时（没有输出）
         if runres == TIMEOUT:
             print_info('TLE', i)
@@ -269,7 +272,19 @@ def judge(config):
             print_info('RE', i)
             print('exe return {}'.format(runres))
             continue
-        res += check_ans_spj(config, i, 100 / (num - 1))
+        score = 100 / (num - 1)
+        get = check_ans_spj(config, i, score)
+        # 正确
+        if get == score:
+            print_info('AC', i, use_time=use_time)
+            print('Accept', file=open('res{}'.format(i), 'w'))
+        # 错误
+        elif get == 0:
+            print_info('WA', i, use_time=use_time)
+        # 部分正确
+        else:
+            print_info('PA', i, use_time=use_time)
+        res += get
     for i in range(PATH.count('/')):
         os.chdir('..')
     return int(res)
