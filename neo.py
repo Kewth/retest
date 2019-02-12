@@ -137,15 +137,22 @@ How to write retest.yaml?
         It's set to 1000 by default.
 
     difftime:
-        The time limit of checking answer.
+        The time limit of checking answer(running spj).
         Its unit is millisecond.
         It's set to 1000 by default.
 
     input:
         The file where exe get input.
+        It's set to standard input by default.
 
     output:
         The file where exe get output.
+        It's set to standard output by default.
+
+    spj:
+        The Special Judge File (Lemon Style).
+        If it's set to ~ (null), ntest will judge traditionally.
+        It's set to ~ by default
 
     If you want to judge more problems, you can set 'Tn' sub configura
   tion.
