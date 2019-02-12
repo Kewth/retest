@@ -9,6 +9,7 @@ import yaml
 import colorama
 
 PATH = './retest_dir'
+TIMEOUT = os.system('timeout 0.1 sleep 1')
 
 def read_data(data):
     '''
@@ -172,11 +173,35 @@ def check_config(config):
         config['time'] = 1000
     if not config.get('difftime'):
         config['difftime'] = 1000
+    if not config.get('mode'):
+        config['mode'] = 'tradition'
     # 在工作目录制造用于运行的 exe
     if config.get('filetype') == 'cpp':
         compile_cpp(config['source'])
     else:
         os.system('cp {} {}/exe'.format(config['source'], PATH))
+
+def check_ans_tradition(config, i):
+    '''
+    比较输出文件与标准答案（编号为 [i] ），以 [config] 为配置
+    返回是否正确
+    '''
+    diffres = os.system( \
+            'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
+            config['difftime'] / 1000, i))
+    # 比较过程超时
+    if diffres == TIMEOUT:
+        print_info('OLE', i)
+        print('Output toolong', file=open('res{}'.format(i), 'a'))
+    # 正确
+    elif diffres == 0:
+        print_info('AC', i)
+        print('Accept', file=open('res{}'.format(i), 'w'))
+        return True
+    # 错误
+    else:
+        print_info('WA', i)
+    return False
 
 def judge(config):
     '''
@@ -186,7 +211,6 @@ def judge(config):
     check_config(config)
     files = read_data(config['data'])
     num = len(files)
-    timeout = os.system('timeout 0.1 sleep 1')
     res = 0
     os.chdir(PATH)
     for i in range(1, num):
@@ -201,7 +225,7 @@ def judge(config):
                 'timeout {0} ./exe < {1}.in > {1}.out'.format( \
                 config['time'] / 1000, i))
         # 程序超时（没有输出）
-        if runres == timeout:
+        if runres == TIMEOUT:
             print_info('TLE', i)
             continue
         # 程序运行时错误（没有输出）
@@ -209,22 +233,9 @@ def judge(config):
             print_info('RE', i)
             print('exe return {}'.format(runres))
             continue
-        # 比较输出文件与标准答案
-        diffres = os.system( \
-                'timeout {0} diff -b -B {1}.out {1}.ans > res{1}'.format( \
-                config['difftime'] / 1000, i))
-        # 比较过程超时
-        if diffres == timeout:
-            print_info('OLE', i)
-            print('Output toolong', file=open('res{}'.format(i), 'a'))
-        # 正确
-        elif diffres == 0:
-            print_info('AC', i)
-            print('Accept', file=open('res{}'.format(i), 'w'))
+        if config['mode'] == 'tradition' \
+                and check_ans_tradition(config, i):
             res += 100 / (num - 1)
-        # 错误
-        else:
-            print_info('WA', i)
     for i in range(PATH.count('/')):
         os.chdir('..')
     return int(res)
