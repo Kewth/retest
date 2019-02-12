@@ -89,9 +89,9 @@ def print_info(typ, i):
         print(colorama.Back.WHITE, colorama.Fore.RED, \
                 'Output Limit Error', colorama.Style.RESET_ALL)
 
-def compile_cpp(name):
+def compile_cpp(name, compiler):
     '编译 c++ 程序到工作目录'
-    res = os.system('g++ {} -o {}/exe'.format(name, PATH))
+    res = os.system('{} {} -o {}/exe'.format(compiler, name, PATH))
     if res != 0:
         error_exit('Compile Error')
 
@@ -181,8 +181,10 @@ def check_config(config):
     else:
         os.system('cp {} {}/spj'.format(config['spj'], PATH))
     # 在工作目录制造用于运行的 exe
-    if config.get('filetype') == 'cpp':
-        compile_cpp(config['source'])
+    if len(config['source']) > 4 and config['source'][-4:] == '.cpp':
+        compile_cpp(config['source'], 'g++')
+    elif len(config['source']) > 2 and config['source'][-2:] == '.c':
+        compile_cpp(config['source'], 'gcc')
     else:
         os.system('cp {} {}/exe'.format(config['source'], PATH))
 
