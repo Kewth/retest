@@ -185,6 +185,12 @@ def judge(config):
     os.chdir(PATH)
     for i in range(1, num):
         # 评测单个测试点
+        if config.get('input'):
+            os.system('ln -sf {}.in {}'.format( \
+                    i, config['input']))
+        if config.get('output'):
+            os.system('ln -sf {}.out {}'.format( \
+                    i, config['output']))
         runres = os.system( \
                 'timeout {0} ./exe < {1}.in > {1}.out'.format( \
                 config['time'] / 1000, i))
