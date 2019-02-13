@@ -307,13 +307,19 @@ def judge(config):
         if config.get('input'):
             os.system('ln -sf {}.in {}'.format( \
                     i, config['input']))
+            input_str = ''
+        else:
+            input_str = ' < {}.in '.format(i)
         if config.get('output'):
             os.system('ln -sf {}.out {}'.format( \
                     i, config['output']))
+            output_str = ''
+        else:
+            output_str = ' < {}.out '.format(i)
         begin_time = time.time()
         runres = os.system( \
-                'timeout {0} ./exe < {1}.in > {1}.out'.format( \
-                config['time'] / 1000, i))
+                'timeout {} ./exe {}{}'.format( \
+                config['time'] / 1000, input_str, output_str))
         use_time = time.time() - begin_time
         # 程序超时（没有输出）
         if runres == TIMEOUT:
