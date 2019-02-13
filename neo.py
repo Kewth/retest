@@ -136,15 +136,12 @@ def make_data(config, times=100):
     config['data'] = 'dp_data'
     # while os.path.exists(config['data']):
     #     config['data'] += '_'
+    upd_config(data, {'times': 10}, require=['std', 'rand'])
     make_dir(config['data'])
-    if not data.get('std'):
-        error_exit('No data.std was read')
-    if not data.get('rand'):
-        error_exit('No data.rand was read')
     compile_source(data['std'], 'std')
     compile_source(data['rand'], 'rand')
-    for i in range(times):
-        print(i + 1, '/', times)
+    for i in range(data['times']):
+        print(i + 1, '/', data['times'])
         os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
         os.system('{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
                 PATH, config['data'], i))
