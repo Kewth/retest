@@ -299,11 +299,11 @@ def judge(config):
                     i, config['output']))
             output_str = ''
         else:
-            output_str = ' < {}.out '.format(i)
+            output_str = ' > {}.out '.format(i)
         begin_time = time.time()
         runres = os.system( \
-                'timeout {} ./exe {}{}'.format( \
-                config['time'] / 1000, input_str, output_str))
+                'timeout {} ./exe {}{} 2> res{}'.format( \
+                config['time'] / 1000, input_str, output_str, i))
         use_time = time.time() - begin_time
         # 程序超时（没有输出）
         if runres == TIMEOUT:
