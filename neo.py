@@ -5,42 +5,14 @@ import sys
 import os
 import shutil
 import argparse
+import time
 import yaml
 import colorama
-import time
 
 PATH = './retest_dir'
 TIMEOUT = os.system('timeout 0.1 sleep 1')
 
-def read_data(data):
-    '''
-    在工作目录创建输入输出文件（源于 [data] ）
-    返回所有数据文件的名字
-    '''
-    files = os.listdir(data)
-    num = 0
-    res = [None]
-    for i in files:
-        if i.rfind('.in') + 3 == len(i):
-            name = i[:-3]
-            outname = ''
-            if name + '.out' in files:
-                outname = '.out'
-            elif name + '.ans' in files:
-                outname = '.ans'
-            if outname == '':
-                continue
-            num += 1
-            up_path = '.'
-            for j in range(PATH.count('/')):
-                up_path += '/..'
-            os.system('ln -s {}/{}/{}{} {}/{}.in'.format( \
-                    up_path, data, name, '.in', PATH, num))
-            os.system('ln -s {}/{}/{}{} {}/{}.ans'.format( \
-                    up_path, data, name, outname, PATH, num))
-            res.append(name)
-    return res
-
+# Print {{{
 def error_exit(info):
     '打印错误信息并退出'
     print(colorama.Fore.RED, info, \
@@ -52,24 +24,6 @@ def warning(info):
     '打印警告信息'
     print(colorama.Fore.YELLOW, 'Warning: ' + info, \
             colorama.Fore.RESET, file=sys.stderr)
-
-def get_config():
-    '''
-    获取配置信息
-    返回一个字典
-    '''
-    home_dir = os.path.expandvars('$HOME') + '/.config/retest/'
-    config_file = open(home_dir + 'retest.yaml', 'r')
-    res = yaml.load(config_file)
-    try:
-        config_file = open('retest.yaml', 'r')
-    except FileNotFoundError:
-        error_exit('No retest.yaml was found, input ntest -h to get help')
-    current_dict = yaml.load(config_file)
-    for key in current_dict:
-        # 用全局配置更新局部配置
-        res[key] = current_dict[key]
-    return res
 
 def print_info(typ, i, use_time=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
@@ -106,6 +60,61 @@ def print_info(typ, i, use_time=None):
                 colorama.Back.GREEN, colorama.Fore.RED, \
                 colorama.Style.RESET_ALL, more_info))
 
+# }}}
+
+# Config {{{
+def get_config():
+    '''
+    获取配置信息
+    返回一个字典
+    '''
+    home_dir = os.path.expandvars('$HOME') + '/.config/retest/'
+    config_file = open(home_dir + 'retest.yaml', 'r')
+    res = yaml.load(config_file)
+    try:
+        config_file = open('retest.yaml', 'r')
+    except FileNotFoundError:
+        error_exit('No retest.yaml was found, input ntest -h to get help')
+    current_dict = yaml.load(config_file)
+    for key in current_dict:
+        # 用全局配置更新局部配置
+        res[key] = current_dict[key]
+    return res
+
+def check_config(config):
+    '检查配置字典 [config] 的合法性'
+    if not config.get('source'):
+        error_exit('No source was read')
+    if not config.get('data'):
+        error_exit('No data was read')
+    if config['data'].__class__ is dict:
+        make_data(config)
+    if not config.get('time'):
+        config['time'] = 1000
+    if not config.get('difftime'):
+        config['difftime'] = 1000
+    # if not config.get('mode'):
+    #     config['mode'] = 'tradition'
+    # 在工作目录制造用于评分的 spj
+    if not config.get('spj'):
+        os.system('cp ~/.config/retest/spj {}/spj'.format(PATH))
+    elif len(config['spj']) > 4 and config['spj'][-4:] == '.cpp':
+        compile_cpp(config['spj'], 'spj', 'g++')
+    elif len(config['spj']) > 2 and config['spj'][-2:] == '.c':
+        compile_cpp(config['spj'], 'spj', 'gcc')
+    else:
+        os.system('cp {} {}/spj'.format(config['spj'], PATH))
+    # 在工作目录制造用于运行的 exe
+    if len(config['source']) > 4 and config['source'][-4:] == '.cpp':
+        compile_cpp(config['source'], 'exe', 'g++')
+    elif len(config['source']) > 2 and config['source'][-2:] == '.c':
+        compile_cpp(config['source'], 'exe', 'gcc')
+    else:
+        os.system('cp {} {}/exe'.format(config['source'], PATH))
+
+# }}}
+
+# File {{{
 def compile_cpp(name, exe, compiler):
     '用 [compiler] 编译程序 [name] 到工作目录的 [exe]'
     res = os.system('{} {} -o {}/{}'.format(compiler, name, PATH, exe))
@@ -134,6 +143,58 @@ def make_dir(dir_name='retest_dir'):
         shutil.rmtree(dir_name)
     os.makedirs(dir_name)
 
+def make_data(config, times=100):
+    '以 [config] 配置制造数据'
+    data = config['data']
+    config['data'] = 'dp_data'
+    # while os.path.exists(config['data']):
+    #     config['data'] += '_'
+    make_dir(config['data'])
+    if not data.get('std'):
+        error_exit('No data.std was read')
+    if not data.get('rand'):
+        error_exit('No data.rand was read')
+    compile_source(data['std'], 'std')
+    compile_source(data['rand'], 'rand')
+    for i in range(times):
+        print(i + 1, '/', times)
+        os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
+        os.system('{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
+                PATH, config['data'], i))
+        print(colorama.Cursor.UP(), end='')
+
+def read_data(data):
+    '''
+    在工作目录创建输入输出文件（源于 [data] ）
+    返回所有数据文件的名字
+    '''
+    files = os.listdir(data)
+    num = 0
+    res = [None]
+    for i in files:
+        if i.rfind('.in') + 3 == len(i):
+            name = i[:-3]
+            outname = ''
+            if name + '.out' in files:
+                outname = '.out'
+            elif name + '.ans' in files:
+                outname = '.ans'
+            if outname == '':
+                continue
+            num += 1
+            up_path = '.'
+            for j in range(PATH.count('/')):
+                up_path += '/..'
+            os.system('ln -s {}/{}/{}{} {}/{}.in'.format( \
+                    up_path, data, name, '.in', PATH, num))
+            os.system('ln -s {}/{}/{}{} {}/{}.ans'.format( \
+                    up_path, data, name, outname, PATH, num))
+            res.append(name)
+    return res
+
+# }}}
+
+# Argument {{{
 def init_args():
     '初始化参数'
     parser = argparse.ArgumentParser(description='''
@@ -146,7 +207,10 @@ And this is the upgraded version of retest
             help='specify the subconfig')
     return parser.parse_args()
 
-def learn(): # {{{
+# }}}
+
+# Learn {{{
+def learn():
     '--learn 的信息'
     print('''
 How to write retest.yaml?
@@ -202,59 +266,10 @@ Some usefull arguments:
         To display this better, you can use 'less' command:
             ntest -l | less
     ''')
+
 # }}}
 
-def make_data(config, times=100):
-    '以 [config] 配置制造数据'
-    data = config['data']
-    config['data'] = 'dp_data'
-    # while os.path.exists(config['data']):
-    #     config['data'] += '_'
-    make_dir(config['data'])
-    if not data.get('std'):
-        error_exit('No data.std was read')
-    if not data.get('rand'):
-        error_exit('No data.rand was read')
-    compile_source(data['std'], 'std')
-    compile_source(data['rand'], 'rand')
-    for i in range(times):
-        print(i + 1, '/', times)
-        os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
-        os.system('{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
-                PATH, config['data'], i))
-        print(colorama.Cursor.UP(), end='')
-
-def check_config(config):
-    '检查配置字典 [config] 的合法性'
-    if not config.get('source'):
-        error_exit('No source was read')
-    if not config.get('data'):
-        error_exit('No data was read')
-    if config['data'].__class__ is dict:
-        make_data(config)
-    if not config.get('time'):
-        config['time'] = 1000
-    if not config.get('difftime'):
-        config['difftime'] = 1000
-    # if not config.get('mode'):
-    #     config['mode'] = 'tradition'
-    # 在工作目录制造用于评分的 spj
-    if not config.get('spj'):
-        os.system('cp ~/.config/retest/spj {}/spj'.format(PATH))
-    elif len(config['spj']) > 4 and config['spj'][-4:] == '.cpp':
-        compile_cpp(config['spj'], 'spj', 'g++')
-    elif len(config['spj']) > 2 and config['spj'][-2:] == '.c':
-        compile_cpp(config['spj'], 'spj', 'gcc')
-    else:
-        os.system('cp {} {}/spj'.format(config['spj'], PATH))
-    # 在工作目录制造用于运行的 exe
-    if len(config['source']) > 4 and config['source'][-4:] == '.cpp':
-        compile_cpp(config['source'], 'exe', 'g++')
-    elif len(config['source']) > 2 and config['source'][-2:] == '.c':
-        compile_cpp(config['source'], 'exe', 'gcc')
-    else:
-        os.system('cp {} {}/exe'.format(config['source'], PATH))
-
+# Judge {{{
 def check_ans_spj(config, i, score):
     '''
     在工作目录用 spj 进行测试（测试点编号为 [i] ）
@@ -326,6 +341,9 @@ def judge(config):
         os.chdir('..')
     return int(res)
 
+# }}}
+
+# Main {{{
 def main():
     '主函数'
     args = init_args()
@@ -368,3 +386,5 @@ print('Made by Kewth', '(c)')
 print('Press', 'Ctrl-c', 'to', 'forcefully', 'exit')
 print('Thanks', 'for', 'using', 'retest')
 sys.exit(RES)
+
+# }}}
