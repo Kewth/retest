@@ -93,34 +93,15 @@ def check_config(config):
         config['time'] = 1000
     if not config.get('difftime'):
         config['difftime'] = 1000
-    # if not config.get('mode'):
-    #     config['mode'] = 'tradition'
-    # 在工作目录制造用于评分的 spj
     if not config.get('spj'):
-        os.system('cp ~/.config/retest/spj {}/spj'.format(PATH))
-    elif len(config['spj']) > 4 and config['spj'][-4:] == '.cpp':
-        compile_cpp(config['spj'], 'spj', 'g++')
-    elif len(config['spj']) > 2 and config['spj'][-2:] == '.c':
-        compile_cpp(config['spj'], 'spj', 'gcc')
-    else:
-        os.system('cp {} {}/spj'.format(config['spj'], PATH))
-    # 在工作目录制造用于运行的 exe
-    if len(config['source']) > 4 and config['source'][-4:] == '.cpp':
-        compile_cpp(config['source'], 'exe', 'g++')
-    elif len(config['source']) > 2 and config['source'][-2:] == '.c':
-        compile_cpp(config['source'], 'exe', 'gcc')
-    else:
-        os.system('cp {} {}/exe'.format(config['source'], PATH))
+        config['spj'] = '~/.config/retest/spj'
+    # 在工作目录制造 spj 与 exe
+    compile_source(config['spj'], 'spj')
+    compile_source(config['source'], 'exe')
 
 # }}}
 
 # File {{{
-def compile_cpp(name, exe, compiler):
-    '用 [compiler] 编译程序 [name] 到工作目录的 [exe]'
-    res = os.system('{} {} -o {}/{}'.format(compiler, name, PATH, exe))
-    if res != 0:
-        error_exit('Compile Error')
-
 def compile_source(name, exe):
     '将 [name] 转换为可执行文件到工作目录的 [exe]'
     if len(name) > 4 and name[-4:] == '.cpp':
@@ -131,7 +112,7 @@ def compile_source(name, exe):
                 'gcc {} -o {}/{}'.format(name, PATH, exe))
     else:
         res = os.system( \
-                'cp {0} {1}/{2} ; chmod {1}/{2}'.format( \
+                'cp {0} {1}/{2} ; chmod +x {1}/{2}'.format( \
                 name, PATH, exe))
     if res != 0:
         error_exit('Compile Error')
