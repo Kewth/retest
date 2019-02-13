@@ -70,31 +70,37 @@ def get_config():
     '''
     home_dir = os.path.expandvars('$HOME') + '/.config/retest/'
     config_file = open(home_dir + 'retest.yaml', 'r')
-    res = yaml.load(config_file)
+    global_config = yaml.load(config_file)
     try:
         config_file = open('retest.yaml', 'r')
     except FileNotFoundError:
-        error_exit('No retest.yaml was found, input ntest -h to get help')
-    current_dict = yaml.load(config_file)
-    for key in current_dict:
-        # 用全局配置更新局部配置
-        res[key] = current_dict[key]
-    return res
+        error_exit( \
+                'No retest.yaml was found, input ntest -l to get help')
+    current_config = yaml.load(config_file)
+    # 用全局配置更新局部配置
+    upd_config(current_config, global_config)
+    return current_config
+
+def upd_config(config, default, require=[]):
+    '''
+    用 [default] 配置更新 [config] 配置
+    [require] 为必须的配置列表
+    '''
+    for key in default:
+        if not config.get(key):
+            config[key] = default[key]
+    for key in require:
+        if not config.get(key):
+            error_exit('No {} was read'.format(require[key]))
 
 def check_config(config):
     '检查配置字典 [config] 的合法性'
-    if not config.get('source'):
-        error_exit('No source was read')
-    if not config.get('data'):
-        error_exit('No data was read')
+    upd_config(config, { \
+            'time': 1000, 'difftime': 1000, \
+            'spj': '~/.config/retest/spj'}, \
+            require=['source', 'data'])
     if config['data'].__class__ is dict:
         make_data(config)
-    if not config.get('time'):
-        config['time'] = 1000
-    if not config.get('difftime'):
-        config['difftime'] = 1000
-    if not config.get('spj'):
-        config['spj'] = '~/.config/retest/spj'
     # 在工作目录制造 spj 与 exe
     compile_source(config['spj'], 'spj')
     compile_source(config['source'], 'exe')
