@@ -10,7 +10,7 @@ import yaml
 import colorama
 
 PATH = './retest_dir'
-TIMEOUT = os.system('timeout 0.1 sleep 1')
+TIMEOUT = os.system('(timeout 0.1 sleep 1) 2>/dev/null')
 HOME_DIR = os.path.expandvars('$HOME') + '/.config/retest/'
 
 # Plugin {{{
@@ -300,7 +300,9 @@ def judge(config):
             output_str = ' > {}.out '.format(i)
         begin_time = time.time()
         runres = os.system( \
-                'timeout {} ./exe {}{} 2> res{}'.format( \
+			'''
+                echo 'timeout {} ./exe {}{} 2> res{} 2>/dev/null' | bash 2>/dev/null
+		'''.format( \
                 config['time'] / 1000, input_str, output_str, i))
         use_time = time.time() - begin_time
         # 程序超时（没有输出）
