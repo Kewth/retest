@@ -28,33 +28,19 @@ def print_info(typ, i, use_time=None, exit_status=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
     _print.begin(i) # No.i
     if typ == 'AC':
-        print('{}{}Accept              {}'.format( \
-                colorama.Back.GREEN, colorama.Fore.WHITE, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_ac()
     elif typ == 'WA':
-        print('{}{}Wrong Answer        {}'.format( \
-                colorama.Back.RED, colorama.Fore.WHITE, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_wa()
     elif typ == 'RE':
-        print('{}{}Runtime Error       {}'.format( \
-                colorama.Back.MAGENTA, colorama.Fore.WHITE, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_re()
     elif typ == 'TLE':
-        print('{}{}Time Limit Error    {}'.format( \
-                colorama.Back.WHITE, colorama.Fore.YELLOW, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_tle()
     elif typ == 'OLE':
-        print('{}{}Output Limit Error  {} '.format( \
-                colorama.Back.WHITE, colorama.Fore.RED, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_ole()
     elif typ == 'UKE':
-        print('{}{}Unknown Error       {} '.format( \
-                colorama.Back.BLACK, colorama.Fore.RED, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_uke()
     elif typ == 'PA':
-        print('{}{}Partially Accept    {}'.format( \
-                colorama.Back.GREEN, colorama.Fore.RED, \
-                colorama.Style.RESET_ALL), end=' ')
+        _print.test_pa()
     if use_time:
         _print.runtime(int(use_time * 1000))
     if exit_status:

@@ -2,7 +2,7 @@
 	sudo cp neo.py /usr/bin/ntest
 	sudo chmod +x /usr/bin/ntest
 
-ninit: ~/.config ~/.config/retest
+ninit: ~/.config ~/.config/retest plugin retest.yaml spj
 	cp retest.yaml ~/.config/retest
 	cp spj ~/.config/retest
 	cp -r plugin ~/.config/retest
