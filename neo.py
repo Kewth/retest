@@ -25,12 +25,14 @@ def warning(info):
     print(colorama.Fore.YELLOW, 'Warning: ' + info, \
             colorama.Fore.RESET, file=sys.stderr)
 
-def print_info(typ, i, use_time=None):
+def print_info(typ, i, use_time=None, exit_status=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
     print('No.{:<4d} '.format(i), end='')
     more_info = ''
     if use_time:
         more_info += 'RunTime: {}ms'.format(int(use_time * 1000))
+    if exit_status:
+        more_info += 'Exit status: {}'.format(exit_status)
     if typ == 'AC':
         print('{}{}Accept              {} {}'.format( \
                 colorama.Back.GREEN, colorama.Fore.WHITE, \
@@ -311,8 +313,7 @@ def judge(config):
             continue
         # 程序运行时错误（没有输出）
         elif runres != 0:
-            print_info('RE', i)
-            print('exe return {}'.format(runres))
+            print_info('RE', i, exit_status=runres)
             continue
         score = 100 / (num - 1)
         get = check_ans_spj(config, i, score)
