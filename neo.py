@@ -11,8 +11,56 @@ import colorama
 
 PATH = './retest_dir'
 TIMEOUT = os.system('timeout 0.1 sleep 1')
+HOME_DIR = os.path.expandvars('$HOME') + '/.config/retest/'
+
+# Plugin {{{
+sys.path.append(HOME_DIR + 'plugin/')
+try:
+    import _print
+except ImportError as err:
+    print(colorama.Fore.RED, 'Plugin Error:', err, \
+            colorama.Fore.RESET, file=sys.stderr)
+    sys.exit(1)
+# }}}
 
 # Print {{{
+def print_info(typ, i, use_time=None, exit_status=None):
+    '打印 [i] 号测试点信息（类型为 [typ]）'
+    _print.begin(i) # No.i
+    if typ == 'AC':
+        print('{}{}Accept              {}'.format( \
+                colorama.Back.GREEN, colorama.Fore.WHITE, \
+                colorama.Style.RESET_ALL), end=' ')
+    elif typ == 'WA':
+        print('{}{}Wrong Answer        {}'.format( \
+                colorama.Back.RED, colorama.Fore.WHITE, \
+                colorama.Style.RESET_ALL), end=' ')
+    elif typ == 'RE':
+        print('{}{}Runtime Error       {}'.format( \
+                colorama.Back.MAGENTA, colorama.Fore.WHITE, \
+                colorama.Style.RESET_ALL), end=' ')
+    elif typ == 'TLE':
+        print('{}{}Time Limit Error    {}'.format( \
+                colorama.Back.WHITE, colorama.Fore.YELLOW, \
+                colorama.Style.RESET_ALL), end=' ')
+    elif typ == 'OLE':
+        print('{}{}Output Limit Error  {} '.format( \
+                colorama.Back.WHITE, colorama.Fore.RED, \
+                colorama.Style.RESET_ALL), end=' ')
+    elif typ == 'UKE':
+        print('{}{}Unknown Error       {} '.format( \
+                colorama.Back.BLACK, colorama.Fore.RED, \
+                colorama.Style.RESET_ALL), end=' ')
+    elif typ == 'PA':
+        print('{}{}Partially Accept    {}'.format( \
+                colorama.Back.GREEN, colorama.Fore.RED, \
+                colorama.Style.RESET_ALL), end=' ')
+    if use_time:
+        _print.runtime(int(use_time * 1000))
+    if exit_status:
+        _print.exitstatus(exit_status)
+    print()
+
 def error_exit(info):
     '打印错误信息并退出'
     print(colorama.Fore.RED, info, \
@@ -25,43 +73,6 @@ def warning(info):
     print(colorama.Fore.YELLOW, 'Warning: ' + info, \
             colorama.Fore.RESET, file=sys.stderr)
 
-def print_info(typ, i, use_time=None, exit_status=None):
-    '打印 [i] 号测试点信息（类型为 [typ]）'
-    print('No.{:<4d} '.format(i), end='')
-    more_info = ''
-    if use_time:
-        more_info += 'RunTime: {}ms'.format(int(use_time * 1000))
-    if exit_status:
-        more_info += 'Exit status: {}'.format(exit_status)
-    if typ == 'AC':
-        print('{}{}Accept              {} {}'.format( \
-                colorama.Back.GREEN, colorama.Fore.WHITE, \
-                colorama.Style.RESET_ALL, more_info))
-    elif typ == 'WA':
-        print('{}{}Wrong Answer        {} {}'.format( \
-                colorama.Back.RED, colorama.Fore.WHITE, \
-                colorama.Style.RESET_ALL, more_info))
-    elif typ == 'RE':
-        print('{}{}Runtime Error       {} {}'.format( \
-                colorama.Back.MAGENTA, colorama.Fore.WHITE, \
-                colorama.Style.RESET_ALL, more_info))
-    elif typ == 'TLE':
-        print('{}{}Time Limit Error    {} {}'.format( \
-                colorama.Back.WHITE, colorama.Fore.YELLOW, \
-                colorama.Style.RESET_ALL, more_info))
-    elif typ == 'OLE':
-        print('{}{}Output Limit Error  {} {}'.format( \
-                colorama.Back.WHITE, colorama.Fore.RED, \
-                colorama.Style.RESET_ALL, more_info))
-    elif typ == 'UKE':
-        print('{}{}Unknown Error       {} {}'.format( \
-                colorama.Back.BLACK, colorama.Fore.RED, \
-                colorama.Style.RESET_ALL, more_info))
-    elif typ == 'PA':
-        print('{}{}Partially Accept    {} {}'.format( \
-                colorama.Back.GREEN, colorama.Fore.RED, \
-                colorama.Style.RESET_ALL, more_info))
-
 # }}}
 
 # Config {{{
@@ -70,8 +81,7 @@ def get_config():
     获取配置信息
     返回一个字典
     '''
-    home_dir = os.path.expandvars('$HOME') + '/.config/retest/'
-    config_file = open(home_dir + 'retest.yaml', 'r')
+    config_file = open(HOME_DIR + 'retest.yaml', 'r')
     global_config = yaml.load(config_file)
     try:
         config_file = open('retest.yaml', 'r')
