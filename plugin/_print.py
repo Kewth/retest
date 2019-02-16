@@ -55,3 +55,21 @@ def test_pa():
     print('{}{}Partially Accept    {}'.format( \
             colorama.Back.WHITE, colorama.Fore.GREEN, \
             colorama.Style.RESET_ALL), end=' ')
+
+def before_judge(problem):
+    '''
+    评测 [problem] 前
+    若 [problem] 为空字符串则说明只有一题待评测
+    '''
+    print('Judging {}'.format(problem))
+
+def start():
+    '所有评测开始前'
+    pass
+
+def end(score):
+    '所有评测结束后，得分为 [score]'
+    print('score: {}'.format(score))
+    print('\n\nSee more message in retest_dir\n\n')
+    print('Made by Kewth', '(c)')
+    print('Thanks', 'for', 'using', 'ntest')

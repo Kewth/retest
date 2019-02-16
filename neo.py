@@ -342,6 +342,7 @@ def main():
         config = config.get(args.use[0])
         if not config:
             error_exit('--use: No such a subconfig')
+    _print.start()
     now = 0
     while config.get('T{}'.format(now + 1)):
         now += 1
@@ -353,7 +354,7 @@ def main():
             problem = 'T{}'.format(i)
             global PATH
             PATH = './retest_dir/' + problem
-            print('Judging {}'.format(problem))
+            _print.before_judge(problem)
             os.makedirs('retest_dir/' + problem)
             sub_config = config[problem]
             for key in config:
@@ -362,16 +363,12 @@ def main():
                     sub_config[key] = config[key]
             score += judge(sub_config)
     else:
-        print('Judging')
+        _print.before_judge('')
         score = judge(config)
-    print('score: {}'.format(score))
+    _print.end(score)
     return 0
 
 RES = main()
-print('\n\nSee more message in retest_dir\n\n')
-print('Made by Kewth', '(c)')
-print('Press', 'Ctrl-c', 'to', 'forcefully', 'exit')
-print('Thanks', 'for', 'using', 'retest')
 sys.exit(RES)
 
 # }}}
