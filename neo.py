@@ -136,8 +136,8 @@ def make_data(config, times=100):
     #     config['data'] += '_'
     upd_config(data, {'times': 10}, require=['std', 'rand'])
     make_dir(config['data'])
-    compile_source(data['std'], 'std', config['option'])
-    compile_source(data['rand'], 'rand', config['option'])
+    compile_source(data['std'], 'std', '')
+    compile_source(data['rand'], 'rand', '')
     for i in range(data['times']):
         print(i + 1, '/', data['times'])
         os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
