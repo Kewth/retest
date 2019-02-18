@@ -95,25 +95,25 @@ def check_config(config):
     '检查配置字典 [config] 的合法性'
     upd_config(config, { \
             'time': 1000, 'difftime': 1000, \
-            'spj': '~/.config/retest/spj'}, \
+            'spj': '~/.config/retest/spj', 'option': ''}, \
             require=['source', 'data'])
     if config['data'].__class__ is dict:
         make_data(config)
     # 在工作目录制造 spj 与 exe
-    compile_source(config['spj'], 'spj')
-    compile_source(config['source'], 'exe')
+    compile_source(config['spj'], 'spj', '')
+    compile_source(config['source'], 'exe', config['option'])
 
 # }}}
 
 # File {{{
-def compile_source(name, exe):
+def compile_source(name, exe, option):
     '将 [name] 转换为可执行文件到工作目录的 [exe]'
     if len(name) > 4 and name[-4:] == '.cpp':
         res = os.system( \
-                'g++ {} -o {}/{}'.format(name, PATH, exe))
+                'g++ {} -o {}/{} {}'.format(name, PATH, exe, option))
     elif len(name) > 2 and name[-2:] == '.c':
         res = os.system( \
-                'gcc {} -o {}/{}'.format(name, PATH, exe))
+                'gcc {} -o {}/{} {}'.format(name, PATH, exe, option))
     else:
         res = os.system( \
                 'cp {0} {1}/{2} ; chmod +x {1}/{2}'.format( \
@@ -136,8 +136,8 @@ def make_data(config, times=100):
     #     config['data'] += '_'
     upd_config(data, {'times': 10}, require=['std', 'rand'])
     make_dir(config['data'])
-    compile_source(data['std'], 'std')
-    compile_source(data['rand'], 'rand')
+    compile_source(data['std'], 'std', config['option'])
+    compile_source(data['rand'], 'rand', config['option'])
     for i in range(data['times']):
         print(i + 1, '/', data['times'])
         os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
