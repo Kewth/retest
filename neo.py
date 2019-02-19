@@ -140,9 +140,17 @@ def make_data(config, times=100):
     compile_source(data['rand'], 'rand', '')
     for i in range(data['times']):
         print(i + 1, '/', data['times'])
-        os.system('{}/rand > {}/{}.in'.format(PATH, config['data'], i))
-        os.system('{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
+        rand_res = os.system('{}/rand > {}/{}.in'.format( \
                 PATH, config['data'], i))
+        if rand_res != 0:
+            error_exit('Make data error: {} exit {}'.format( \
+                    data['rand'], rand_res))
+        std_res = os.system( \
+                '{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
+                PATH, config['data'], i))
+        if std_res != 0:
+            error_exit('Make data error: {} exit {}'.format( \
+                    data['std'], std_res))
         print(colorama.Cursor.UP(), end='')
 
 def read_data(data):
