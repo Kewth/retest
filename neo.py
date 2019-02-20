@@ -309,7 +309,7 @@ def judge(config):
         begin_time = time.time()
         runres = os.system( \
 			'''
-                echo 'timeout {} ./exe {}{} 2> res{} 2>/dev/null' | bash 2>/dev/null
+                echo 'timeout {} ./exe {}{} 2> res{}' | bash 2>/dev/null
 		'''.format( \
                 config['time'] / 1000, input_str, output_str, i))
         use_time = time.time() - begin_time
