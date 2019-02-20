@@ -277,7 +277,10 @@ def check_ans_spj(config, i, score):
     # 评分过程错误
     elif spres != 0:
         print_info('UKE', i)
-    get = float(open('sp.get', 'r').readline()[:-1])
+    try:
+        get = float(open('sp.get', 'r').readline()[:-1])
+    except FileNotFoundError as err:
+        error_exit('Spj doesn\'t output score')
     print('\nMessage from spj:', file=open('res{}'.format(i), 'a'))
     os.system('cat sp.log >> res{}'.format(i))
     return get
