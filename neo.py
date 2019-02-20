@@ -213,6 +213,16 @@ How to write retest.yaml?
     data: (required)
         The directory where include all data files.
 
+        If a sub dict was given, ntest will make data itself:
+            rand: (required)
+                The file which make input file.
+
+            std: (required)
+                The file which make output file.
+
+            times: (required)
+                The number of the test-cases.
+
     time:
         The time limit of each judgement.
         Its unit is millisecond.
@@ -232,7 +242,7 @@ How to write retest.yaml?
         It's set to standard output by default.
 
     spj:
-        The Special Judge File (Lemon Style).
+        The Special Judge File (Lemon Style[1]).
         If it's set to ~ (null), ntest will judge traditionally.
         It's set to ~ by default
 
@@ -255,6 +265,15 @@ Some usefull arguments:
         Print this message to learn how to use ntest.
         To display this better, you can use 'less' command:
             ntest -l | less
+
+    [1]: Lemon Style
+        The spj is given 6 arguments.
+        Argv[1] is the input file.
+        Argv[2] is the output file of user.
+        Argv[3] is the answer file.
+        Argv[4] is the max scores of the test-case.
+        Argv[5] is the output file of spj which include the scores user get.
+        Argv[6] is the log file of spj.
     ''')
 
 # }}}
