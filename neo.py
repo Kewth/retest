@@ -108,7 +108,7 @@ def upd_config(config, default, require=[]):
             config[key] = default[key]
     for key in require:
         if not config.get(key):
-            error_exit('No {} was read'.format(require[key]))
+            error_exit('No {} was read'.format(key))
 
 def check_config(config):
     '检查配置字典 [config] 的合法性'
