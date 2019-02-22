@@ -360,7 +360,8 @@ def judge(config):
         begin_time = time.time()
         runres = os.system( \
 			'''
-                echo 'timeout {} ./exe {}{} 2> res{}' | bash 2>/dev/null
+                echo 'timeout {} ./exe {}{} 2> res{}' \
+                | bash 2>/dev/null
 		'''.format( \
                 config['time'] / 1000, input_str, output_str, i))
         use_time = time.time() - begin_time
@@ -370,6 +371,8 @@ def judge(config):
             continue
         # 程序运行时错误（没有输出）
         elif runres != 0:
+            if runres % 256 == 0:
+                runres >>= 8
             print_info('RE', i, exit_status=runres)
             continue
         score = 100 / (num - 1)
