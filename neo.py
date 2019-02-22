@@ -51,7 +51,7 @@ def print_info(typ, i, use_time=None, exit_status=None):
         PRINT.runtime(int(use_time * 1000))
     if exit_status:
         PRINT.exitstatus(exit_status)
-    print()
+    PRINT.end_case(typ)
 
 def error_exit(info):
     '打印错误信息并退出'
