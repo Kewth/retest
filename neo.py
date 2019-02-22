@@ -12,39 +12,45 @@ import colorama
 PATH = './retest_dir'
 TIMEOUT = os.system('(timeout 0.1 sleep 1) 2>/dev/null')
 HOME_DIR = os.path.expandvars('$HOME') + '/.config/retest/'
+PRINT = None
 
 # Plugin {{{
-sys.path.append(HOME_DIR + 'plugin/')
-try:
-    import _print
-except ImportError as err:
-    print(colorama.Fore.RED, 'Plugin Error:', err, \
-            colorama.Fore.RESET, file=sys.stderr)
-    sys.exit(1)
+def get_plugin(name):
+    '获取插件 [name] 到全局变量 PRINT :-)'
+    try:
+        os.system( \
+                'cp {0}plugin/{1} /tmp/ntest_plugin.py'.format( \
+                HOME_DIR, name + '.py'))
+        sys.path.append('/tmp')
+        import ntest_plugin
+        global PRINT
+        PRINT = ntest_plugin
+    except ImportError:
+        error_exit('No plugin named ' + name)
 # }}}
 
 # Print {{{
 def print_info(typ, i, use_time=None, exit_status=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
-    _print.begin(i) # No.i
+    PRINT.begin(i) # No.i
     if typ == 'AC':
-        _print.test_ac()
+        PRINT.test_ac()
     elif typ == 'WA':
-        _print.test_wa()
+        PRINT.test_wa()
     elif typ == 'RE':
-        _print.test_re()
+        PRINT.test_re()
     elif typ == 'TLE':
-        _print.test_tle()
+        PRINT.test_tle()
     elif typ == 'OLE':
-        _print.test_ole()
+        PRINT.test_ole()
     elif typ == 'UKE':
-        _print.test_uke()
+        PRINT.test_uke()
     elif typ == 'PA':
-        _print.test_pa()
+        PRINT.test_pa()
     if use_time:
-        _print.runtime(int(use_time * 1000))
+        PRINT.runtime(int(use_time * 1000))
     if exit_status:
-        _print.exitstatus(exit_status)
+        PRINT.exitstatus(exit_status)
     print()
 
 def error_exit(info):
@@ -113,7 +119,7 @@ def upd_config(config, default, require=[]):
 def check_config(config):
     '检查配置字典 [config] 的合法性'
     upd_config(config, { \
-            'time': 1000, 'difftime': 1000, \
+            'time': 1000, 'difftime': 1000, 'plugin': '_print', \
             'spj': HOME_DIR + 'spj', 'option': ''}, \
             require=['source', 'data'])
     if config['data'].__class__ is dict:
@@ -406,7 +412,8 @@ def main():
         config = config.get(args.use[0])
         if not config:
             error_exit('--use: No such a subconfig')
-    _print.start()
+    get_plugin(config['plugin'])
+    PRINT.start()
     now = 0
     while config.get('T{}'.format(now + 1)):
         now += 1
@@ -418,7 +425,7 @@ def main():
             problem = 'T{}'.format(i)
             global PATH
             PATH = './retest_dir/' + problem
-            _print.before_judge(problem)
+            PRINT.before_judge(problem)
             os.makedirs('retest_dir/' + problem)
             sub_config = config[problem]
             for key in config:
@@ -427,9 +434,9 @@ def main():
                     sub_config[key] = config[key]
             score += judge(sub_config)
     else:
-        _print.before_judge('')
+        PRINT.before_judge('')
         score = judge(config)
-    _print.end(score)
+    PRINT.end(score)
     return 0
 
 RES = main()

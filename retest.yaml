@@ -1,3 +1,4 @@
 filetype: cpp
 time: 1000
 difftime: 1000
+plugin: _print
