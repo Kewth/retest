@@ -114,7 +114,7 @@ def check_config(config):
     '检查配置字典 [config] 的合法性'
     upd_config(config, { \
             'time': 1000, 'difftime': 1000, \
-            'spj': '~/.config/retest/spj', 'option': ''}, \
+            'spj': HOME_DIR + 'spj', 'option': ''}, \
             require=['source', 'data'])
     if config['data'].__class__ is dict:
         make_data(config)
@@ -126,13 +126,21 @@ def check_config(config):
 
 # File {{{
 def compile_source(name, exe, option):
-    '将 [name] 转换为可执行文件到工作目录的 [exe]'
+    '''
+    将 [name:str] 转换为可执行文件到工作目录的 [exe:str]
+    如果是编译，添加参数 [option:str]
+    '''
+    if not os.path.exists(name):
+        error_exit('No source file {}, compile error'.format( \
+                name))
     if len(name) > 4 and name[-4:] == '.cpp':
         res = os.system( \
-                'g++ {} -o {}/{} {}'.format(name, PATH, exe, option))
+                'g++ {} -o {}/{} {}'.format( \
+                name, PATH, exe, option))
     elif len(name) > 2 and name[-2:] == '.c':
         res = os.system( \
-                'gcc {} -o {}/{} {}'.format(name, PATH, exe, option))
+                'gcc {} -o {}/{} {}'.format( \
+                name, PATH, exe, option))
     else:
         res = os.system( \
                 'cp {0} {1}/{2} ; chmod +x {1}/{2}'.format( \
@@ -147,7 +155,7 @@ def make_dir(dir_name='retest_dir'):
         shutil.rmtree(dir_name)
     os.makedirs(dir_name)
 
-def make_data(config, times=100):
+def make_data(config):
     '以 [config] 配置制造数据'
     data = config['data']
     config['data'] = 'dp_data'
@@ -317,7 +325,7 @@ def check_ans_spj(config, i, score):
         print_info('UKE', i)
     try:
         get = float(open('sp.get', 'r').readline()[:-1])
-    except FileNotFoundError as err:
+    except FileNotFoundError:
         error_exit('Spj doesn\'t output score')
     print('\nMessage from spj:', file=open('res{}'.format(i), 'a'))
     os.system('cat sp.log >> res{}'.format(i))
@@ -331,6 +339,8 @@ def judge(config):
     check_config(config)
     files = read_data(config['data'])
     num = len(files)
+    if num == 1:
+        warning('No input and output file.')
     res = 0
     os.chdir(PATH)
     for i in range(1, num):
