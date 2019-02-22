@@ -23,3 +23,4 @@ pip_lock:
 	pip3 install colorama
 	pip3 install argparse
 	pip3 install pyyaml
+	touch pip_lock
