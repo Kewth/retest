@@ -51,7 +51,11 @@ def error_exit(info):
     '打印错误信息并退出'
     print(colorama.Fore.RED, info, \
             colorama.Fore.RESET, file=sys.stderr)
-    shutil.rmtree('retest_dir')
+    try:
+        shutil.rmtree('retest_dir')
+    except FileNotFoundError:
+        print(colorama.Fore.RED, 'No retest_dir, exit.', \
+                colorama.Fore.RESET, file=sys.stderr)
     sys.exit(1)
 
 def warning(info):
@@ -67,15 +71,30 @@ def get_config():
     获取配置信息
     返回一个字典
     '''
-    config_file = open(HOME_DIR + 'retest.yaml', 'r')
+    # 获取全局配置
+    try:
+        config_file = open(HOME_DIR + 'retest.yaml', 'r')
+    except FileNotFoundError:
+        error_exit( \
+                'No global retest.yaml was found in \
+                ~/.config/retest/, \
+                input ntest -l to get help')
     global_config = yaml.load(config_file)
+    # 获取当前配置
     try:
         config_file = open('retest.yaml', 'r')
     except FileNotFoundError:
         error_exit( \
-                'No retest.yaml was found, input ntest -l to get help')
+                'No retest.yaml was found, \
+                input ntest -l to get help')
     current_config = yaml.load(config_file)
     # 用全局配置更新局部配置
+    if not global_config:
+        warning('Global config file is empty!')
+        global_config = {}
+    if not current_config:
+        warning('Config file is empty!')
+        current_config = {}
     upd_config(current_config, global_config)
     return current_config
 
@@ -271,7 +290,7 @@ Some usefull arguments:
         Argv[1] is the input file.
         Argv[2] is the output file of user.
         Argv[3] is the answer file.
-        Argv[4] is the max scores of the test-case.
+        Argv[4] is the a number which means max scores of the test-case.
         Argv[5] is the output file of spj which include the scores user get.
         Argv[6] is the log file of spj.
     ''')
