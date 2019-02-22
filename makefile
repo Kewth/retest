@@ -1,8 +1,8 @@
-/usr/bin/ntest: neo.py ninit
+/usr/bin/ntest: neo.py ninit pip_lock
 	sudo cp neo.py /usr/bin/ntest
 	sudo chmod +x /usr/bin/ntest
 
-~/.local/bin/ntest: neo.py ninit
+~/.local/bin/ntest: neo.py ninit pip_lock
 	cp neo.py ~/.local/bin/ntest
 	chmod +x ~/.local/bin/ntest
 
@@ -18,22 +18,8 @@ ninit: ~/.config ~/.config/retest plugin retest.yaml spj
 ~/.config/retest:
 	mkdir ~/.config/retest -p
 
-/usr/bin/retest: retest init
-	sudo cp retest /usr/bin
-
-init: ~/.config ~/.config/retest
-	mkdir ~/.config -p
-	mkdir ~/.config/retest -p
-	touch ~/.config/retest/file.txt
-	touch init
-
-retest: retest.py
-	cp retest.py retest
-	chmod +x retest
-
-uninstall: clean
-	sudo rm /usr/bin/retest
-
-clean:
-	rm retest
-	rm init
+pip_lock:
+	sudo apt install python3-pip
+	pip3 install colorama
+	pip3 install argparse
+	pip3 install pyyaml
