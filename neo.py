@@ -160,6 +160,9 @@ def make_dir(dir_name='retest_dir'):
         warning('The directory {} has exist'.format(dir_name))
         shutil.rmtree(dir_name)
     os.makedirs(dir_name)
+    if dir_name == 'retest_dir':
+        os.system('touch retest_dir/retest.yaml')
+        os.system('echo "cd: .." >  retest_dir/retest.yaml')
 
 def make_data(config):
     '以 [config] 配置制造数据'
@@ -213,6 +216,8 @@ def read_data(data):
             os.system('ln -s {}/{}/{}{} {}/{}.ans'.format( \
                     up_path, data, name, outname, PATH, num))
             res.append(name)
+    os.system('touch {}/retest.yaml'.format(PATH))
+    os.system('echo "cd: .." >  {}/retest.yaml'.format(PATH))
     return res
 
 # }}}
