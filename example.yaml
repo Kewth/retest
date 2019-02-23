@@ -1,15 +1,20 @@
-time: 1000
-difftime: 1000
+time: 1000 # 限时（全局）
+difftime: 1000 # spj 限时（全局）
 T1:
-    source: a.cpp
-    data: data/A
-    input: a.in
-    output: a.out
+    source: a.cpp # 源文件
+    data: data/A # 数据目录
+    input: a.in # freopen("a.in", "r", stdin)
+    output: a.out # freopen("a.out", "w", stdout)
 T2:
     source: b.cpp
     data: data/B
 T3:
-    source: c.py
+    source: b.pl # perl 程序
     data: data/B
-    time: 2000
-
+    time: 3000 # 限时（局部，仅限于 T3）
+T4:
+    source: c.cpp
+    data: # 自动生成数据（对拍）
+        rand: rand.py # 输入数据生成文件
+        std: std.cpp # 输出数据生成文件（标程/暴力）
+        times: 200 # 制造 200 组数据
