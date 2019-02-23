@@ -408,11 +408,14 @@ def main():
         learn()
         return 0
     config = get_config()
+    if config.get('cd'):
+        os.chdir(config['cd'])
+        config = get_config()
+    get_plugin(config['plugin'])
     if args.use:
         config = config.get(args.use[0])
         if not config:
             error_exit('--use: No such a subconfig')
-    get_plugin(config['plugin'])
     PRINT.start()
     now = 0
     while config.get('T{}'.format(now + 1)):
