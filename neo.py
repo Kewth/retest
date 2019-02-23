@@ -396,7 +396,7 @@ def judge(config):
         res += get
     for i in range(PATH.count('/')):
         os.chdir('..')
-    return int(res)
+    return int(res + 0.5)
 
 # }}}
 
