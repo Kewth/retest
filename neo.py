@@ -158,8 +158,12 @@ def make_dir(dir_name='retest_dir'):
     '强行创建基目录 [dir_name]'
     if os.path.exists(dir_name):
         warning('The directory {} has exist'.format(dir_name))
-        shutil.rmtree(dir_name)
-    os.makedirs(dir_name)
+        files = os.listdir(dir_name)
+        for i in files:
+            os.remove('{}/{}'.format(dir_name, i))
+        # shutil.rmtree(dir_name)
+    else:
+        os.makedirs(dir_name)
     if dir_name == 'retest_dir':
         os.system('touch retest_dir/retest.yaml')
         os.system('echo "cd: .." >  retest_dir/retest.yaml')
