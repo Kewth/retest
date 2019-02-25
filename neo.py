@@ -160,7 +160,11 @@ def make_dir(dir_name='retest_dir'):
         warning('The directory {} has exist'.format(dir_name))
         files = os.listdir(dir_name)
         for i in files:
-            os.remove('{}/{}'.format(dir_name, i))
+            to_remove = '{}/{}'.format(dir_name, i)
+            if os.path.isdir(to_remove):
+                shutil.rmtree(to_remove)
+            else:
+                os.remove(to_remove)
         # shutil.rmtree(dir_name)
     else:
         os.makedirs(dir_name)
