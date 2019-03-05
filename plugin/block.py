@@ -24,6 +24,9 @@ def test_re():
 def test_tle():
     print('{} {}'.format(colorama.Back.YELLOW, colorama.Back.RESET), end='')
 
+def test_mle():
+    print('{} {}'.format(colorama.Back.WHITE, colorama.Back.RESET), end='')
+
 def test_ole():
     print('{} {}'.format(colorama.Back.WHITE, colorama.Back.RESET), end='')
 

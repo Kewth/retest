@@ -42,6 +42,10 @@ def test_tle():
     print('{}{}♨{}'.format(colorama.Style.BRIGHT, \
 		    colorama.Fore.CYAN, colorama.Style.RESET_ALL), end=' ')
 
+def test_mle():
+    'MLE 信息'
+    print('ld_liaomo 太懒了，还没有提供 mle 的接口')
+
 def test_ole():
     'OLE 信息'
     print('☠', end=' ')

@@ -35,6 +35,10 @@ def test_tle():
     'TLE 信息'
     print(' TLE', end='')
 
+def test_mle():
+    'MLE 信息'
+    print(' MLE', end='')
+
 def test_ole():
     'OLE 信息'
     print(' OLE', end='')

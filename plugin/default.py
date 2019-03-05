@@ -43,6 +43,12 @@ def test_tle():
             colorama.Back.WHITE, colorama.Fore.YELLOW, \
             colorama.Style.RESET_ALL), end=' ')
 
+def test_mle():
+    'MLE 信息'
+    print('{}{}Memory Limit Error  {}'.format( \
+            colorama.Back.WHITE, colorama.Fore.MAGENTA, \
+            colorama.Style.RESET_ALL), end=' ')
+
 def test_ole():
     'OLE 信息'
     print('{}{}Output Limit Error  {} '.format( \
