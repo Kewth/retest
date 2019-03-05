@@ -25,3 +25,8 @@ T4: # 对拍
         std: std.cpp # 输出数据生成文件（标程/暴力）
         times: 200 # 制造 200 组数据
 
+T5: # 其他
+    source: c.cpp
+    data: data/C
+    option: -O2 -Wall # 编译选项（开启 O2 优化，开启编译警告）
+
