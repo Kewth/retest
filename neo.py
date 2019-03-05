@@ -38,7 +38,7 @@ def mem_out():
     return res
 
 def limit_memory(maxsize):
-    '限制子进程运行内存'
+    '限制子进程运行内存 [maxsize] 字节（ -1 表示无限制）'
     import resource
     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
     resource.setrlimit(resource.RLIMIT_AS, (maxsize, hard))
@@ -407,14 +407,15 @@ def judge(config):
             runres = mem_out()
         limit_memory(-1)
         use_time = time.time() - begin_time
-        # 程序超时（没有输出）
+        # 程序超时（ 被 kill ）
         if runres == TIMEOUT:
             print_info('TLE', i)
             continue
+        # 程序内存超出限制（ 被 kill ）
         elif runres == mem_out():
             print_info('MLE', i)
             continue
-        # 程序运行时错误（没有输出）
+        # 程序运行时错误（ 被 kill ）
         elif runres != 0:
             if runres % 256 == 0:
                 runres >>= 8
