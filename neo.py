@@ -313,6 +313,10 @@ How to write retest.yaml?
         If it's set to ~ (null), ntest will judge traditionally.
         It's set to ~ by default
 
+    option:
+        The option to compile (only used for g++ and gcc).
+        Many Oier may want to open O2 switch. Just add 'option: -O2'.
+
     If you want to judge more problems, you can set 'Tn' sub configura
   tion.
         For example:
