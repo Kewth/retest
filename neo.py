@@ -48,28 +48,31 @@ def limit_memory(maxsize):
 # Print {{{
 def print_info(typ, i, use_time=None, exit_status=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
-    PRINT.begin(i) # No.i
-    if typ == 'AC':
-        PRINT.test_ac()
-    elif typ == 'WA':
-        PRINT.test_wa()
-    elif typ == 'RE':
-        PRINT.test_re()
-    elif typ == 'TLE':
-        PRINT.test_tle()
-    elif typ == 'MLE':
-        PRINT.test_mle()
-    elif typ == 'OLE':
-        PRINT.test_ole()
-    elif typ == 'UKE':
-        PRINT.test_uke()
-    elif typ == 'PA':
-        PRINT.test_pa()
-    if use_time:
-        PRINT.runtime(int(use_time * 1000))
-    if exit_status:
-        PRINT.exitstatus(exit_status)
-    PRINT.end_case(typ)
+    try:
+        PRINT.begin(i) # No.i
+        if typ == 'AC':
+            PRINT.test_ac()
+        elif typ == 'WA':
+            PRINT.test_wa()
+        elif typ == 'RE':
+            PRINT.test_re()
+        elif typ == 'TLE':
+            PRINT.test_tle()
+        elif typ == 'MLE':
+            PRINT.test_mle()
+        elif typ == 'OLE':
+            PRINT.test_ole()
+        elif typ == 'UKE':
+            PRINT.test_uke()
+        elif typ == 'PA':
+            PRINT.test_pa()
+        if use_time:
+            PRINT.runtime(int(use_time * 1000))
+        if exit_status:
+            PRINT.exitstatus(exit_status)
+        PRINT.end_case(typ)
+    except AttributeError as err:
+        warning('PluginTooOld: {}'.format(err))
 
 def error_exit(info):
     '打印错误信息并退出'
@@ -456,7 +459,10 @@ def main():
         config = config.get(args.use[0])
         if not config:
             error_exit('--use: No such a subconfig')
-    PRINT.start()
+    try:
+        PRINT.start()
+    except AttributeError as err:
+        warning('PluginTooOld: {}'.format(err))
     now = 0
     while config.get('T{}'.format(now + 1)):
         now += 1
@@ -468,7 +474,10 @@ def main():
             problem = 'T{}'.format(i)
             global PATH
             PATH = './retest_dir/' + problem
-            PRINT.before_judge(problem)
+            try:
+                PRINT.before_judge(problem)
+            except AttributeError as err:
+                warning('PluginTooOld: {}'.format(err))
             os.makedirs('retest_dir/' + problem)
             sub_config = config[problem]
             for key in config:
@@ -477,9 +486,15 @@ def main():
                     sub_config[key] = config[key]
             score += judge(sub_config)
     else:
-        PRINT.before_judge('')
+        try:
+            PRINT.before_judge('')
+        except AttributeError as err:
+            warning('PluginTooOld: {}'.format(err))
         score = judge(config)
-    PRINT.end(score)
+    try:
+        PRINT.end(score)
+    except AttributeError as err:
+        warning('PluginTooOld: {}'.format(err))
     return 0
 
 RES = main()
