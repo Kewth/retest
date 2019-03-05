@@ -295,6 +295,11 @@ How to write retest.yaml?
         Its unit is millisecond.
         It's set to 1000 by default.
 
+    memory:
+        The memory limit of each judgement.
+        Its unit is megabyte.
+        NOTE: MLE won't be displayed somtimes (it'll be showed as RE).
+
     difftime:
         The time limit of checking answer(running spj).
         Its unit is millisecond.
