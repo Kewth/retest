@@ -298,7 +298,7 @@ How to write retest.yaml?
     memory:
         The memory limit of each judgement.
         Its unit is megabyte.
-        NOTE: MLE won't be displayed somtimes (it'll be showed as RE).
+        NOTE: MLE won't be displayed somtimes (it'll be shown as RE).
 
     difftime:
         The time limit of checking answer(running spj).
