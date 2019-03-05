@@ -1,20 +1,27 @@
 time: 1000 # 限时（全局）
 difftime: 1000 # spj 限时（全局）
-T1:
+memory: 1024 # 内存限制（全局）
+
+T1: # 一般配置
     source: a.cpp # 源文件
     data: data/A # 数据目录
     input: a.in # freopen("a.in", "r", stdin)
     output: a.out # freopen("a.out", "w", stdout)
-T2:
+
+T2: # 最简配置
     source: b.cpp
     data: data/B
-T3:
+
+T3: # 其他语言的使用
     source: b.pl # perl 程序
     data: data/B
     time: 3000 # 限时（局部，仅限于 T3）
-T4:
+    memory: 128 # 内存限制（局部，仅限于 T3）
+
+T4: # 对拍
     source: c.cpp
     data: # 自动生成数据（对拍）
         rand: rand.py # 输入数据生成文件
         std: std.cpp # 输出数据生成文件（标程/暴力）
         times: 200 # 制造 200 组数据
+
