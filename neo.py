@@ -29,6 +29,22 @@ def get_plugin(name):
         error_exit('No plugin named ' + name)
 # }}}
 
+# Memory {{{
+def mem_out():
+    'MLE 的返回值'
+    limit_memory(1)
+    res = os.system('echo "Neo Retest !" > /dev/null')
+    limit_memory(-1)
+    return res
+
+def limit_memory(maxsize):
+    '限制子进程运行内存'
+    import resource
+    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+    resource.setrlimit(resource.RLIMIT_AS, (maxsize, hard))
+
+# }}}
+
 # Print {{{
 def print_info(typ, i, use_time=None, exit_status=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
@@ -41,6 +57,8 @@ def print_info(typ, i, use_time=None, exit_status=None):
         PRINT.test_re()
     elif typ == 'TLE':
         PRINT.test_tle()
+    elif typ == 'MLE':
+        PRINT.test_mle()
     elif typ == 'OLE':
         PRINT.test_ole()
     elif typ == 'UKE':
@@ -120,7 +138,7 @@ def check_config(config):
     '检查配置字典 [config] 的合法性'
     upd_config(config, { \
             'time': 1000, 'difftime': 1000, 'plugin': '_print', \
-            'spj': HOME_DIR + 'spj', 'option': ''}, \
+            'spj': HOME_DIR + 'spj', 'option': '', 'memory': 1024}, \
             require=['source', 'data'])
     if config['data'].__class__ is dict:
         make_data(config)
@@ -377,16 +395,24 @@ def judge(config):
         else:
             output_str = ' > {}.out '.format(i)
         begin_time = time.time()
-        runres = os.system( \
-			'''
-                echo 'timeout {} ./exe {}{} 2> res{}' \
-                | bash 2>/dev/null
-		'''.format( \
-                config['time'] / 1000, input_str, output_str, i))
+        try:
+            limit_memory(config['memory'])
+            runres = os.system( \
+                            '''
+                    echo 'timeout {} ./exe {}{} 2> res{}' \
+                    | bash 2>/dev/null
+                    '''.format( \
+                    config['time'] / 1000, input_str, output_str, i))
+        except MemoryError:
+            runres = mem_out()
+        limit_memory(-1)
         use_time = time.time() - begin_time
         # 程序超时（没有输出）
         if runres == TIMEOUT:
             print_info('TLE', i)
+            continue
+        elif runres == mem_out():
+            print_info('MLE', i)
             continue
         # 程序运行时错误（没有输出）
         elif runres != 0:
