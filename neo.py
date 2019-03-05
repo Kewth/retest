@@ -396,7 +396,7 @@ def judge(config):
             output_str = ' > {}.out '.format(i)
         begin_time = time.time()
         try:
-            limit_memory(config['memory'])
+            limit_memory(config['memory'] * 1024 * 1024)
             runres = os.system( \
                             '''
                     echo 'timeout {} ./exe {}{} 2> res{}' \
