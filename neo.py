@@ -240,10 +240,12 @@ def read_data(data):
             up_path = '.'
             for j in range(PATH.count('/')):
                 up_path += '/..'
-            os.system('ln -s {}/{}/{}{} {}/{}.in'.format( \
-                    up_path, data, name, '.in', PATH, num))
-            os.system('ln -s {}/{}/{}{} {}/{}.ans'.format( \
-                    up_path, data, name, outname, PATH, num))
+            os.symlink('{}/{}/{}{}'.format( \
+                    up_path, data, name, '.in'), '{}/{}.in'.format( \
+                    PATH, num))
+            os.symlink('{}/{}/{}{}'.format( \
+                    up_path, data, name, outname), '{}/{}.ans'.format( \
+                    PATH, num))
             res.append(name)
     os.system('touch {}/retest.yaml'.format(PATH))
     os.system('echo "cd: .." >  {}/retest.yaml'.format(PATH))
@@ -397,14 +399,16 @@ def judge(config):
     for i in range(1, num):
         # 评测单个测试点
         if config.get('input'):
-            os.system('ln -sf {}.in {}'.format( \
-                    i, config['input']))
+            if os.path.exists(config['input']):
+                os.remove(config['input'])
+            os.symlink('{}.in'.format(i), config['input'])
             input_str = ''
         else:
             input_str = ' < {}.in '.format(i)
         if config.get('output'):
-            os.system('ln -sf {}.out {}'.format( \
-                    i, config['output']))
+            if os.path.exists(config['output']):
+                os.remove(config['output'])
+            os.symlink('{}.out'.format(i), config['output'])
             output_str = ''
         else:
             output_str = ' > {}.out '.format(i)
