@@ -361,6 +361,8 @@ def check_ans_spj(config, i, score):
     以 [config] 为配置
     返回得分
     '''
+    if not os.path.exists('sp.log'):
+        os.mknod('sp.log')
     spres = os.system( \
             'timeout {2} ./spj \
             {0}.in {0}.out {0}.ans {1} sp.get sp.log'.format( \
