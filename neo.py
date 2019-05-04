@@ -106,7 +106,7 @@ def get_config():
                 'No global retest.yaml was found in \
                 ~/.config/retest/, \
                 input ntest -l to get help')
-    global_config = yaml.load(config_file)
+    global_config = yaml.load(config_file, Loader=yaml.FullLoader)
     # 获取当前配置
     try:
         config_file = open('retest.yaml', 'r')
@@ -114,7 +114,7 @@ def get_config():
         error_exit( \
                 'No retest.yaml was found, \
                 input ntest -l to get help')
-    current_config = yaml.load(config_file)
+    current_config = yaml.load(config_file, Loader=yaml.FullLoader)
     # 用全局配置更新局部配置
     if not global_config:
         warning('Global config file is empty!')
