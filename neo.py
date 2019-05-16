@@ -205,13 +205,13 @@ def make_data(config):
     compile_source(data['rand'], 'rand', '')
     for i in range(data['times']):
         print(i + 1, '/', data['times'])
-        rand_res = os.system('{}/rand > {}/{}.in'.format( \
+        rand_res = os.system('{}/rand > {}/{}.in 2> /dev/null'.format( \
                 PATH, config['data'], i))
         if rand_res != 0:
             error_exit('Make data error: {} exit {}'.format( \
                     data['rand'], rand_res))
         std_res = os.system( \
-                '{0}/std < {1}/{2}.in > {1}/{2}.out'.format( \
+                '{0}/std < {1}/{2}.in > {1}/{2}.out 2> /dev/null'.format( \
                 PATH, config['data'], i))
         if std_res != 0:
             error_exit('Make data error: {} exit {}'.format( \
