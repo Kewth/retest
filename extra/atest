@@ -1,0 +1,37 @@
+#!/usr/bin/lua
+sourcePath = arg[1];
+problemName = arg[2];
+if sourcePath == nil then
+	print('Usage:\n\tatest <source> [problem]');
+	return 0;
+end
+
+function createYaml(id, name) 
+  local yaml = "";
+  yaml = yaml .. 
+  "T" .. id .. ":\n" ..
+  "  source: source/" .. sourcePath .. "/" .. name .. ".cpp\n" ..
+  "  data: data/" .. name .. "\n" .. 
+  "  input: " .. name .. ".in\n" .. 
+  "  output: " .. name .. ".out\n";
+  return yaml;
+end
+
+yaml = "";
+if problemName then 
+  yaml = createYaml(1, problemName);
+else
+  problems = io.popen("ls data", "r");
+  id = 1;
+  while true do
+    name = problems:read("*l");
+    if name == nil then break; end
+    yaml = yaml .. createYaml(id, name);
+    id = id + 1;
+  end
+end
+
+file = io.open("retest.yaml", "w");
+file:write(yaml);
+file:close();
+os.execute("retest");
