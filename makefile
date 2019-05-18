@@ -1,10 +1,10 @@
-/usr/bin/ntest: neo.py ninit pip_lock
-	sudo cp neo.py /usr/bin/ntest
-	sudo chmod +x /usr/bin/ntest
+/usr/bin/ntest: neo.py ninit pip_lock atest
+	sudo cp neo.py /usr/bin/retest
+	sudo chmod +x /usr/bin/retest
 
 ~/.local/bin/ntest: neo.py ninit pip_lock
-	cp neo.py ~/.local/bin/ntest
-	chmod +x ~/.local/bin/ntest
+	cp neo.py ~/.local/bin/retest
+	chmod +x ~/.local/bin/retest
 
 ninit: ~/.config ~/.config/retest plugin retest.yaml spj
 	cp retest.yaml ~/.config/retest
@@ -24,3 +24,7 @@ pip_lock:
 	pip3 install argparse
 	pip3 install pyyaml
 	touch pip_lock
+
+atest:
+	sudo cp extra/atest /usr/bin/atest
+	sudo chmod +x /usr/bin/atest
