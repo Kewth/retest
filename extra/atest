@@ -31,7 +31,7 @@ else
   end
 end
 
-file = io.open("retest.yaml", "w");
+file = io.open("ntest.yaml", "w");
 file:write(yaml);
 file:close();
-os.execute("retest");
+os.execute("ntest");
