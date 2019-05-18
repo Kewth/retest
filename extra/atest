@@ -6,19 +6,19 @@ if sourcePath == nil then
 	return 0;
 end
 
-function createYaml(id, name) 
+function createYaml(id, name)
   local yaml = "";
-  yaml = yaml .. 
+  yaml = yaml ..
   "T" .. id .. ":\n" ..
   "  source: source/" .. sourcePath .. "/" .. name .. ".cpp\n" ..
-  "  data: data/" .. name .. "\n" .. 
-  "  input: " .. name .. ".in\n" .. 
+  "  data: data/" .. name .. "\n" ..
+  "  input: " .. name .. ".in\n" ..
   "  output: " .. name .. ".out\n";
   return yaml;
 end
 
 yaml = "";
-if problemName then 
+if problemName then
   yaml = createYaml(1, problemName);
 else
   problems = io.popen("ls data", "r");
