@@ -1,10 +1,14 @@
 /usr/bin/ntest: neo.py ninit pip_lock atest
 	sudo cp neo.py /usr/bin/retest
 	sudo chmod +x /usr/bin/retest
+	sudo cp neo.py /usr/bin/ntest
+	sudo chmod +x /usr/bin/ntest
 
 ~/.local/bin/ntest: neo.py ninit pip_lock
 	cp neo.py ~/.local/bin/retest
 	chmod +x ~/.local/bin/retest
+	cp neo.py ~/.local/bin/ntest
+	chmod +x ~/.local/bin/ntest
 
 ninit: ~/.config ~/.config/retest plugin retest.yaml spj
 	cp retest.yaml ~/.config/retest
