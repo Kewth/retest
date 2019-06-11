@@ -27,7 +27,7 @@ def list_plugin():
 def get_plugin(name):
     '获取插件 [name] 到全局变量 PRINT :-)'
     if name not in list_plugin():
-        error_exit('No plugin named {}'.format(name)) # TODO: try list plugin
+        error_exit('No plugin named {}.\nTry ntest -p'.format(name))
     os.system( \
             'cp {0}plugin/{1} /tmp/ntest_plugin.py'.format( \
             HOME_DIR, name + '.py'))
@@ -271,6 +271,8 @@ And this is the upgraded version of retest
 ''')
     parser.add_argument('-l', '--learn', action='store_true', \
             help='learn how to use ntest')
+    parser.add_argument('-p', '--plugin', action='store_true', \
+            help='list all the plugin can be used')
     parser.add_argument('-u', '--use', action='append', \
             help='specify the subconfig')
     return parser.parse_args()
@@ -365,6 +367,12 @@ Some usefull arguments:
         Print this message to learn how to use ntest.
         To display this better, you can use 'less' command:
             ntest -l | less
+
+    --plugin, -p:
+        Print all plugins you can use.
+
+    --use, -u:
+        Use subconfig of retest.yaml.
 
     [1]: Lemon Style
         The spj is given 6 arguments.
@@ -486,6 +494,10 @@ def main():
     args = init_args()
     if args.learn:
         learn()
+        return 0
+    if args.plugin:
+        for i in list_plugin():
+            print(i)
         return 0
     config = get_config()
     while config.get('cd'):
