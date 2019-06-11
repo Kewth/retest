@@ -479,7 +479,7 @@ def main():
         learn()
         return 0
     config = get_config()
-    if config.get('cd'):
+    while config.get('cd'):
         os.chdir(config['cd'])
         config = get_config()
     if config.get('before'):
