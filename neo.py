@@ -15,18 +15,27 @@ HOME_DIR = os.path.expandvars('$HOME') + '/.config/retest/'
 PRINT = None
 
 # Plugin {{{
+def list_plugin():
+    '返回所有可用的插件'
+    files = os.listdir('{}plugin/'.format(HOME_DIR))
+    plugins = []
+    for f in files:
+        if len(f) >= 3 and f[-3:] == '.py':
+            plugins.append(f[:-3])
+    return plugins
+
 def get_plugin(name):
     '获取插件 [name] 到全局变量 PRINT :-)'
-    try:
-        os.system( \
-                'cp {0}plugin/{1} /tmp/ntest_plugin.py'.format( \
-                HOME_DIR, name + '.py'))
-        sys.path.append('/tmp')
-        import ntest_plugin
-        global PRINT
-        PRINT = ntest_plugin
-    except ImportError:
-        error_exit('No plugin named ' + name)
+    if name not in list_plugin():
+        error_exit('No plugin named {}'.format(name)) # TODO: try list plugin
+    os.system( \
+            'cp {0}plugin/{1} /tmp/ntest_plugin.py'.format( \
+            HOME_DIR, name + '.py'))
+    sys.path.append('/tmp')
+    import ntest_plugin
+    global PRINT
+    PRINT = ntest_plugin
+
 # }}}
 
 # Memory {{{
