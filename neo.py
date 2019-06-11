@@ -459,7 +459,7 @@ How to write retest.yaml?
 
     plugin:
         The plugins you want to use which is set to default by default :)
-        You can use only one plugin or less than 10 plugins.
+        You can use only one plugin or up to 10 plugins.
         For example:
             plugin: default
         Another example:
