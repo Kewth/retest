@@ -18,14 +18,16 @@ def list_plugin():
     '返回所有可用的插件'
     files = os.listdir('{}plugin/'.format(HOME_DIR))
     plugins = []
-    for f in files:
-        if len(f) >= 3 and f[-3:] == '.py':
-            plugins.append(f[:-3])
+    for i in files:
+        if len(i) >= 3 and i[-3:] == '.py':
+            plugins.append(i[:-3])
     return plugins
 
 def get_plugin(name):
-    '获取插件 [name] 到全局变量 PRINT :-)'
-    '变量 plugins 为已用的插件'
+    '''
+    获取插件 [name] 到全局变量 PRINT :-)
+    变量 plugins 为已用的插件
+    '''
     if name not in list_plugin():
         error_exit('No plugin named {}.\nTry ntest -p'.format(name))
     os.system( \
@@ -33,19 +35,20 @@ def get_plugin(name):
             HOME_DIR, name + '.py'))
     sys.path.append('/tmp')
     import ntest_plugin
-    global PRINT
     get_plugin.plugins.append(ntest_plugin)
 get_plugin.plugins = []
 
 def search_plugin(pluginrun):
+    '插件接口的模板'
     def res(*args):
-        for p in get_plugin.plugins:
+        for i in get_plugin.plugins:
             try:
-                pluginrun(p, args)
+                pluginrun(i, args)
             except AttributeError as err:
                 pass
     return res
 
+# 以下都是插件接口
 @search_plugin
 def plugin_begin(plugin, args):
     plugin.begin(args[0])
