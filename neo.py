@@ -135,7 +135,7 @@ def plugin_test_pa(plugin, args):
 
 @search_plugin
 def plugin_before_judge(plugin, args):
-    plugin.exitsatus(args[0])
+    plugin.before_judge(args[0])
 
 @search_plugin
 def plugin_start(plugin, args):
