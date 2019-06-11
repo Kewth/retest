@@ -1,5 +1,4 @@
 '打印测试点信息'
-
 import colorama
 
 def begin(id_x):
@@ -9,14 +8,6 @@ def begin(id_x):
 def end_case(typ):
     '测完一个测试点后，该测试点状态为 [typ]'
     print()
-
-def runtime(use):
-    '运行时间 [use] ms'
-    print('RunTime:', use, 'ms', end='')
-
-def exitstatus(ret):
-    'RE 返回 [ret]'
-    print('Exit status:', ret, end='')
 
 def test_ac():
     'AC 信息'
@@ -65,21 +56,3 @@ def test_pa():
     print('{}{}Partially Accept    {}'.format( \
             colorama.Back.WHITE, colorama.Fore.GREEN, \
             colorama.Style.RESET_ALL), end=' ')
-
-def before_judge(problem):
-    '''
-    评测 [problem] 前
-    若 [problem] 为空字符串则说明只有一题待评测
-    '''
-    print('Judging {}'.format(problem))
-
-def start():
-    '所有评测开始前'
-    pass
-
-def end(score):
-    '所有评测结束后，得分为 [score]'
-    print('score: {}'.format(score))
-    print('\n\nSee more message in retest_dir\n\n')
-    print('Made by Kewth', '(c)')
-    print('Thanks', 'for', 'using', 'ntest')

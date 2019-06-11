@@ -2,7 +2,6 @@
 'Kewth 心情好的时候喜欢的主题'
 import os
 import sys
-import readline
 import urllib.request
 import random
 import colorama

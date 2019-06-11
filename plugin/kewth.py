@@ -1,10 +1,7 @@
 # By Kewth
 'Kewth 喜欢的主题'
 import os
-import sys
-import readline
 import urllib.request
-import random
 import colorama
 
 def self_data(typ):
