@@ -1,0 +1,21 @@
+#!/usr/bin/python3
+# 生成 retest.yaml ，评测当前目录，从 rar 中解压
+
+import os
+li = []
+for f in os.listdir():
+    if f[-4:] == '.cpp':
+        li.append(f[:-4]) 
+target = open('retest.yaml', 'w')
+print('''
+before: rar x test*.rar data > /dev/null
+after: rm -r data
+''', file=target)
+for i in range(len(li)):
+    print('''
+T{0}:
+    source: {1}.cpp
+    data: data/{1}
+    input: {1}.in
+    output: {1}.out
+'''.format(i + 1, li[i]), file=target)
