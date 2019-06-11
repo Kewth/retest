@@ -51,3 +51,15 @@ ntest -l
 
 如果你有自己的小工具或者插件，不放写在 extra 目录下或者 plugin 目录下，提交 pull request 。
 
+## 常见问题
+
+Q: 为什么 ntest 测第 3 个点 WA 但是自己测的时候 AC ？  
+A1: 第三个点 3.in 在实际数据文件夹中可能并不是 3.in ，事实上 3.in 指的是 retest_dir/3.in 。  
+A2: 程序里有 freopen 但未指定 input/output
+
+Q: 为什么改 retest_dir 里面的数据的时候原数据也出了问题。  
+A: retest_dir 内的数据实际上都是符号链接。
+
+Q: 为什么 ntest 报错并崩溃？  
+A: 写了 input/output 但没打 freopen 。
+
