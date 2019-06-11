@@ -12,7 +12,6 @@ import colorama
 PATH = './retest_dir'
 TIMEOUT = os.system('(timeout 0.1 sleep 1) 2>/dev/null')
 HOME_DIR = os.path.expandvars('$HOME') + '/.config/retest/'
-PRINT = None
 
 # Plugin {{{
 def list_plugin():
@@ -26,6 +25,7 @@ def list_plugin():
 
 def get_plugin(name):
     '获取插件 [name] 到全局变量 PRINT :-)'
+    '变量 plugins 为已用的插件'
     if name not in list_plugin():
         error_exit('No plugin named {}.\nTry ntest -p'.format(name))
     os.system( \
@@ -34,7 +34,77 @@ def get_plugin(name):
     sys.path.append('/tmp')
     import ntest_plugin
     global PRINT
-    PRINT = ntest_plugin
+    get_plugin.plugins.append(ntest_plugin)
+get_plugin.plugins = []
+
+def search_plugin(pluginrun):
+    def res(*args):
+        for p in get_plugin.plugins:
+            try:
+                pluginrun(p, args)
+            except AttributeError as err:
+                pass
+    return res
+
+@search_plugin
+def plugin_begin(plugin, args):
+    plugin.begin(args[0])
+
+@search_plugin
+def plugin_end_case(plugin, args):
+    plugin.end_case(args[0])
+
+@search_plugin
+def plugin_runtime(plugin, args):
+    plugin.runtime(args[0])
+
+@search_plugin
+def plugin_exitsatus(plugin, args):
+    plugin.exitsatus(args[0])
+
+@search_plugin
+def plugin_test_ac(plugin, args):
+    plugin.test_ac()
+
+@search_plugin
+def plugin_test_wa(plugin, args):
+    plugin.test_wa()
+
+@search_plugin
+def plugin_test_re(plugin, args):
+    plugin.test_re()
+
+@search_plugin
+def plugin_test_tle(plugin, args):
+    plugin.test_tle()
+
+@search_plugin
+def plugin_test_mle(plugin, args):
+    plugin.test_mle()
+
+@search_plugin
+def plugin_test_ole(plugin, args):
+    plugin.test_ole()
+
+@search_plugin
+def plugin_test_uke(plugin, args):
+    plugin.test_uke()
+
+@search_plugin
+def plugin_test_pa(plugin, args):
+    plugin.test_pa()
+
+@search_plugin
+def plugin_before_judge(plugin, args):
+    plugin.exitsatus(args[0])
+
+@search_plugin
+def plugin_start(plugin, args):
+    plugin.start()
+
+@search_plugin
+def plugin_end(plugin, args):
+    plugin.end(args[0])
 
 # }}}
 
@@ -58,28 +128,28 @@ def limit_memory(maxsize):
 def print_info(typ, i, use_time=None, exit_status=None):
     '打印 [i] 号测试点信息（类型为 [typ]）'
     try:
-        PRINT.begin(i) # No.i
+        plugin_begin(i) # No.i
         if typ == 'AC':
-            PRINT.test_ac()
+            plugin_test_ac()
         elif typ == 'WA':
-            PRINT.test_wa()
+            plugin_test_wa()
         elif typ == 'RE':
-            PRINT.test_re()
+            plugin_test_re()
         elif typ == 'TLE':
-            PRINT.test_tle()
+            plugin_test_tle()
         elif typ == 'MLE':
-            PRINT.test_mle()
+            plugin_test_mle()
         elif typ == 'OLE':
-            PRINT.test_ole()
+            plugin_test_ole()
         elif typ == 'UKE':
-            PRINT.test_uke()
+            plugin_test_uke()
         elif typ == 'PA':
-            PRINT.test_pa()
+            plugin_test_pa()
         if use_time:
-            PRINT.runtime(int(use_time * 1000))
+            plugin_runtime(int(use_time * 1000))
         if exit_status:
-            PRINT.exitstatus(exit_status)
-        PRINT.end_case(typ)
+            plugin_exitstatus(exit_status)
+        plugin_end_case(typ)
     except AttributeError as err:
         warning('PluginTooOld: {}'.format(err))
 
@@ -511,7 +581,7 @@ def main():
         if not config:
             error_exit('--use: No such a subconfig')
     try:
-        PRINT.start()
+        plugin_start()
     except AttributeError as err:
         warning('PluginTooOld: {}'.format(err))
     now = 0
@@ -526,7 +596,7 @@ def main():
             global PATH
             PATH = './retest_dir/' + problem
             try:
-                PRINT.before_judge(problem)
+                plugin_before_judge(problem)
             except AttributeError as err:
                 warning('PluginTooOld: {}'.format(err))
             os.makedirs('retest_dir/' + problem)
@@ -538,12 +608,12 @@ def main():
             score += judge(sub_config)
     else:
         try:
-            PRINT.before_judge('')
+            plugin_before_judge('')
         except AttributeError as err:
             warning('PluginTooOld: {}'.format(err))
         score = judge(config)
     try:
-        PRINT.end(score)
+        plugin_end(score)
     except AttributeError as err:
         warning('PluginTooOld: {}'.format(err))
     if config.get('after'):
