@@ -324,6 +324,19 @@ How to write retest.yaml?
         The option to compile (only used for g++ and gcc).
         Many Oier may want to open O2 switch. Just add 'option: -O2'.
 
+    cd:
+        The directory where the real retest.yaml is.
+        Of course is's set to './' by default.
+
+    before:
+        The command you want to run before ntest.
+
+    after:
+        The command you want to run after ntest.
+        For example, if the data directory is too lagre that is in the .rar file, just add this:
+            before: rar x *.rar data
+            after: rm -r data
+
     If you want to judge more problems, you can set 'Tn' sub configura
   tion.
         For example:
@@ -469,6 +482,8 @@ def main():
     if config.get('cd'):
         os.chdir(config['cd'])
         config = get_config()
+    if config.get('before'):
+        os.system(config['before'])
     get_plugin(config['plugin'])
     if args.use:
         config = config.get(args.use[0])
@@ -510,6 +525,8 @@ def main():
         PRINT.end(score)
     except AttributeError as err:
         warning('PluginTooOld: {}'.format(err))
+    if config.get('after'):
+        os.system(config['after'])
     return 0
 
 RES = main()
