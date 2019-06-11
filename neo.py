@@ -457,6 +457,17 @@ How to write retest.yaml?
             before: rar x *.rar data
             after: rm -r data
 
+    plugin:
+        The plugins you want to use which is set to default by default :)
+        You can use only one plugin or less than 10 plugins.
+        For example:
+            plugin: default
+        Another example:
+            plugin:
+                - kewth
+                - acm
+        When you want to judge more than one problem, the plugin in sub_config is invalid.
+
     If you want to judge more problems, you can set 'Tn' sub configura
   tion.
         For example:
