@@ -4,7 +4,7 @@
 
 ```bash
 git clone https://github.com/kewth/retest
-cd pychat
+cd retest
 make
 ```
 
@@ -12,7 +12,7 @@ make
 
 ```bash
 git clone https://github.com/kewth/retest
-cd pychat
+cd retest
 make ~/.local/bin/ntest
 ```
 ## 使用
