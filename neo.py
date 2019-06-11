@@ -258,7 +258,7 @@ def upd_config(config, default, require=[]):
 def check_config(config):
     '检查配置字典 [config] 的合法性'
     upd_config(config, { \
-            'time': 1000, 'difftime': 1000, 'plugin': '_print', \
+            'time': 1000, 'difftime': 1000, 'plugin': 'default', \
             'spj': HOME_DIR + 'spj', 'option': '', 'memory': 512}, \
             require=['source', 'data'])
     if config['data'].__class__ is dict:
