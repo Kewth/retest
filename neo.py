@@ -38,6 +38,13 @@ def get_plugin(name):
     get_plugin.plugins.append(ntest_plugin)
 get_plugin.plugins = []
 
+def get_plugins(plugins):
+    '获取插件'
+    if type(plugins) is not list:
+        plugins = [plugins]
+    for i in plugins:
+        get_plugin(i)
+
 def search_plugin(pluginrun):
     '插件接口的模板'
     def res(*args):
@@ -578,7 +585,7 @@ def main():
         config = get_config()
     if config.get('before'):
         os.system(config['before'])
-    get_plugin(config['plugin'])
+    get_plugins(config['plugin'])
     if args.use:
         config = config.get(args.use[0])
         if not config:
