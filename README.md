@@ -37,8 +37,9 @@ ntest -l
 
 ## 功能
 
-- 支持 AC, WA, RE, TLE, CE 评测状态（暂不支持的有 MLE).
+- 支持 AC, WA, RE, TLE, MLE, CE 评测状态。
 - 支持 spj 比较
+- 支持对拍
 - 支持插件扩展
 - 每个点 AC 后会给出用时。
 - 评测后会生成目录 retest_dir ，内有评测详细信息。
