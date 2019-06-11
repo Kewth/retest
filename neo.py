@@ -30,12 +30,41 @@ def get_plugin(name):
     '''
     if name not in list_plugin():
         error_exit('No plugin named {}.\nTry ntest -p'.format(name))
+    length = len(get_plugin.plugins)
     os.system( \
-            'cp {0}plugin/{1} /tmp/ntest_plugin.py'.format( \
-            HOME_DIR, name + '.py'))
+            'cp {0}plugin/{1}.py /tmp/ntest_plugin{2}.py'.format( \
+            HOME_DIR, name, length))
     sys.path.append('/tmp')
-    import ntest_plugin
-    get_plugin.plugins.append(ntest_plugin)
+    if length == 0:
+        import ntest_plugin0
+        get_plugin.plugins.append(ntest_plugin0)
+    elif length == 1:
+        import ntest_plugin1
+        get_plugin.plugins.append(ntest_plugin1)
+    elif length == 2:
+        import ntest_plugin2
+        get_plugin.plugins.append(ntest_plugin2)
+    elif length == 3:
+        import ntest_plugin3
+        get_plugin.plugins.append(ntest_plugin3)
+    elif length == 4:
+        import ntest_plugin4
+        get_plugin.plugins.append(ntest_plugin4)
+    elif length == 5:
+        import ntest_plugin5
+        get_plugin.plugins.append(ntest_plugin5)
+    elif length == 6:
+        import ntest_plugin6
+        get_plugin.plugins.append(ntest_plugin6)
+    elif length == 7:
+        import ntest_plugin7
+        get_plugin.plugins.append(ntest_plugin7)
+    elif length == 8:
+        import ntest_plugin8
+        get_plugin.plugins.append(ntest_plugin8)
+    elif length == 9:
+        import ntest_plugin9
+        get_plugin.plugins.append(ntest_plugin9)
 get_plugin.plugins = []
 
 def get_plugins(plugins):
