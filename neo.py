@@ -620,10 +620,10 @@ def main():
             print(i)
         return 0
     config = get_config()
-    upd_config(config, {'plugin': 'default'})
     while config.get('cd'):
         os.chdir(config['cd'])
         config = get_config()
+    upd_config(config, {'plugin': 'default'})
     if config.get('before'):
         os.system(config['before'])
     get_plugins(config['plugin'])
