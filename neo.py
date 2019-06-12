@@ -98,8 +98,8 @@ def plugin_runtime(plugin, args):
     plugin.runtime(args[0])
 
 @search_plugin
-def plugin_exitsatus(plugin, args):
-    plugin.exitsatus(args[0])
+def plugin_exitstatus(plugin, args):
+    plugin.exitstatus(args[0])
 
 @search_plugin
 def plugin_test_ac(plugin, args):
