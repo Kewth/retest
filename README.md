@@ -50,7 +50,7 @@ ntest -l
 但是想让 ntest 在自己的习惯下更好用，也是很容易做到的。  
 比如写个 retest.yaml 生成器之类的小工具，或者使用 python 编写扩展插件得到更好的效果，甚至可以用 ntest 做后端自己写接口。
 
-如果你有自己的小工具或者插件，不放写在 extra 目录下或者 plugin 目录下，提交 pull request 。
+如果你有自己的小工具或者插件，不妨写在 extra 目录下或者 plugin 目录下，提交 pull request 。
 
 ## 常见问题
 
