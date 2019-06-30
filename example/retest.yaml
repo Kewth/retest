@@ -1,0 +1,6 @@
+source: my.cpp
+data: data
+time: 100
+input: my.in
+output: my.out
+after: rm -r retest_dir
