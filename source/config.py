@@ -16,17 +16,17 @@ def get_config():
         config_file = open(XDG.xdg_data_home + '/retest/retest.yaml', 'r')
     except FileNotFoundError:
         info.error_exit( \
-                'No global retest.yaml was found in \
-                {}/retest/, \
-                input ntest -l to get help'.format(XDG.xdg_data_home))
+                'No global retest.yaml was found in ' + \
+                '{}/retest/, ' + \
+                'input ntest -l to get help'.format(XDG.xdg_data_home))
     global_config = yaml.load(config_file, Loader=yaml.FullLoader)
     # 获取当前配置
     try:
         config_file = open('retest.yaml', 'r')
     except FileNotFoundError:
         info.error_exit( \
-                'No retest.yaml was found, \
-                input ntest -l to get help')
+                'No retest.yaml was found, ' + \
+                'input ntest -l to get help')
     current_config = yaml.load(config_file, Loader=yaml.FullLoader)
     # 用全局配置更新局部配置
     if not global_config:
