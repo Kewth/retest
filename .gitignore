@@ -1,4 +1,6 @@
-init
-ninit
-retest
-pip_lock
+__pycache__
+setup.pyc
+MANIFEST
+build
+dist
+retest.egg-info
