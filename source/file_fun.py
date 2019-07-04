@@ -5,6 +5,7 @@ import shutil
 import os
 import colorama
 from retest import info
+from retest import config
 
 def compile_source(name, exe, option, path):
     '''
