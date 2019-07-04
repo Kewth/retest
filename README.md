@@ -5,7 +5,7 @@
 ### 直接安装
 
 ```
-pip3 install --index-url https://test.pypi.org/simple/ --no-deps retest
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps retest
 ```
 
 ### 从源码安装
