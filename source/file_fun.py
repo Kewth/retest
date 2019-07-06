@@ -5,7 +5,6 @@ import shutil
 import os
 import colorama
 from retest import info
-from retest import config
 
 def compile_source(name, exe, option, path):
     '''
@@ -54,6 +53,7 @@ def make_data(config_dict, path):
     config_dict['data'] = 'dp_data'
     # while os.path.exists(config_dict['data']):
     #     config_dict['data'] += '_'
+    from retest import config # 不能全局 import ，原因不详
     config.upd_config(data, {'times': 10}, require=['std', 'rand'])
     make_dir(config_dict['data'])
     compile_source(data['std'], 'std', '', path)
