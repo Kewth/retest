@@ -79,8 +79,14 @@ def read_data(data, path):
     返回所有数据文件的名字
     '''
     files = os.listdir(data)
-    num = 0
-    res = [None]
+    class File:
+        def __init__(self, name, inname, outname):
+            self.name = name
+            self.inname = inname
+            self.outname = outname
+            self.size = os.path.getsize(data + '/' + name + inname) \
+                    + os.path.getsize(data + '/' + name + outname)
+    res = []
     for i in files:
         if i.rfind('.in') + 3 == len(i):
             name = i[:-3]
@@ -91,16 +97,17 @@ def read_data(data, path):
                 outname = '.ans'
             if outname == '':
                 continue
-            num += 1
+            res.append(File(name, '.in', outname))
+    res.sort(key=lambda x : x.size)
+    for i in range(len(res)):
             up_path = '.'
             for j in range(path.count('/')):
                 up_path += '/..'
             os.symlink('{}/{}/{}{}'.format( \
-                    up_path, data, name, '.in'), '{}/{}.in'.format( \
-                    path, num))
+                    up_path, data, res[i].name, res[i].inname), '{}/{}.in'.format( \
+                    path, i + 1))
             os.symlink('{}/{}/{}{}'.format( \
-                    up_path, data, name, outname), '{}/{}.ans'.format( \
-                    path, num))
-            res.append(name)
+                    up_path, data, res[i].name, res[i].outname), '{}/{}.ans'.format( \
+                    path, i + 1))
     print('cd ..', file=open('{}/retest.yaml'.format(path), 'w'))
-    return res
+    return [None] + [i.name for i in res]
