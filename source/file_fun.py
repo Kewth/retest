@@ -102,6 +102,5 @@ def read_data(data, path):
                     up_path, data, name, outname), '{}/{}.ans'.format( \
                     path, num))
             res.append(name)
-    os.system('touch {}/retest.yaml'.format(path))
-    os.system('echo "cd: .." >  {}/retest.yaml'.format(path))
+    print('cd ..', file=open('{}/retest.yaml'.format(path), 'w'))
     return res
