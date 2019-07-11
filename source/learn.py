@@ -5,7 +5,7 @@ def main():
     '--learn 的信息'
     print('''
 How to write retest.yaml?
-    The file retest.yaml is used by ntest to judge.
+    The file retest.yaml is used by retest to judge.
     You can get a full example on ~/.config/retest/example.yaml .
 
     source: (required)
@@ -14,7 +14,7 @@ How to write retest.yaml?
     data: (required)
         The directory where include all data files.
 
-        If a sub dict was given, ntest will make data itself:
+        If a sub dict was given, retest will make data itself:
             rand: (required)
                 The file which make input file.
 
@@ -49,7 +49,7 @@ How to write retest.yaml?
 
     spj:
         The Special Judge File (Lemon Style[1]).
-        If it's set to ~ (null), ntest will judge traditionally.
+        If it's set to ~ (null), retest will judge traditionally.
         It's set to ~ by default
 
     option:
@@ -61,10 +61,10 @@ How to write retest.yaml?
         Of course is's set to './' by default.
 
     before:
-        The command you want to run before ntest.
+        The command you want to run before retest.
 
     after:
-        The command you want to run after ntest.
+        The command you want to run after retest.
         For example, if the data directory is too lagre that is in the .rar file, just add this:
             before: rar x *.rar data
             after: rm -r data
@@ -93,12 +93,12 @@ How to write retest.yaml?
         It will judge 2 problems in one time.
 
 Some usefull arguments:
-    You can rough understanding by using 'ntest -h' or 'ntest --help'.
+    You can rough understanding by using 'retest -h' or 'retest --help'.
 
     --learn, -l:
-        Print this message to learn how to use ntest.
+        Print this message to learn how to use retest.
         To display this better, you can use 'less' command:
-            ntest -l | less
+            retest -l | less
 
     --plugin, -p:
         Print all plugins you can use.
