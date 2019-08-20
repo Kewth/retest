@@ -95,8 +95,8 @@ def judge(config_dict, path):
         get = check_ans_spj(config_dict, i, score)
         # 正确
         if get == score:
-            info.print_info('AC', i, use_time=use_time)
             print('Accept', file=open('res{}'.format(i), 'w'))
+            info.print_info('AC', i, use_time=use_time)
         # 错误
         elif get == 0:
             info.print_info('WA', i, use_time=use_time)
