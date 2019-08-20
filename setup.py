@@ -18,6 +18,7 @@ setup(
         'pyyaml',
         'colorama',
         'resource',
+        'pyxdg',
     ],
     data_files=[
         ('share/retest', ['spj', 'retest.yaml']),

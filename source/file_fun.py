@@ -109,5 +109,5 @@ def read_data(data, path):
             os.symlink('{}/{}/{}{}'.format( \
                     up_path, data, res[i].name, res[i].outname), '{}/{}.ans'.format( \
                     path, i + 1))
-    print('cd ..', file=open('{}/retest.yaml'.format(path), 'w'))
+    print('cd: ..', file=open('{}/retest.yaml'.format(path), 'w'))
     return [None] + [i.name for i in res]
