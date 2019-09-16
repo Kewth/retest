@@ -21,7 +21,7 @@ def get_plugin(name):
     变量 plugins 为已用的插件
     '''
     if name not in list_plugin():
-        info.error_exit('No plugin named {}.\nTry ntest -p'.format(name))
+        info.error_exit('No plugin named {}.\nTry retest -p'.format(name))
     length = len(get_plugin.plugins)
     os.system( \
             'cp {}/retest/plugin/{}.py /tmp/ntest_plugin{}.py'.format( \

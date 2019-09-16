@@ -18,7 +18,7 @@ A retest command which is like lemon but run in terminal.
 And this is the upgraded version of retest
 ''')
     parser.add_argument('-l', '--learn', action='store_true', \
-            help='learn how to use ntest')
+            help='learn how to use retest')
     parser.add_argument('-p', '--plugin', action='store_true', \
             help='list all the plugin can be used')
     parser.add_argument('-u', '--use', action='append', \
