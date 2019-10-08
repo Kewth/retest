@@ -2,12 +2,14 @@
 
 ## 安装
 
+请自行安装 `python3-pip` 。
+
 ### 直接安装
 
 方便，但是不会经常维护，如果碰到问题请使用源码安装获得最新版本。
 
 ```
-python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps retest
+pip3 install ioretest --user
 ```
 
 ### 从源码安装
