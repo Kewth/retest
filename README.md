@@ -9,7 +9,7 @@
 方便，但是不会经常维护，如果碰到问题请使用源码安装获得最新版本。
 
 ```
-pip3 install ioretest --user
+pip3 install oiretest --user
 ```
 
 ### 从源码安装
