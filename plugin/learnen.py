@@ -50,19 +50,19 @@ def test_re():
 
 def test_tle():
     'TLE 信息'
-    print('{}{}Time Limit Error    {}'.format( \
+    print('{}{}Time Limit Exceeded    {}'.format( \
             colorama.Back.WHITE, colorama.Fore.YELLOW, \
             colorama.Style.RESET_ALL), end=' ')
 
 def test_mle():
     'MLE 信息'
-    print('{}{}Memory Limit Error  {}'.format( \
+    print('{}{}Memory Limit Exceeded  {}'.format( \
             colorama.Back.WHITE, colorama.Fore.MAGENTA, \
             colorama.Style.RESET_ALL), end=' ')
 
 def test_ole():
     'OLE 信息'
-    print('{}{}Output Limit Error  {} '.format( \
+    print('{}{}Output Limit Exceeded  {} '.format( \
             colorama.Back.WHITE, colorama.Fore.RED, \
             colorama.Style.RESET_ALL), end=' ')
 
