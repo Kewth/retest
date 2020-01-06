@@ -76,7 +76,7 @@ def test_pa():
             colorama.Back.WHITE, colorama.Fore.GREEN, \
             colorama.Style.RESET_ALL), end=' ')
     # 如果希望输出分数，读取 sp.get 即可
-    print('score:{} '.format(int(open('sp.get', 'r').readline()[:-1])),\
+    print('score:{} '.format(int(open('sp.get', 'r').readline().replace('\n', ''))),\
             end='')
 
 def lcs(str1, str2):

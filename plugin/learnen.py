@@ -107,14 +107,14 @@ def before_judge(problem):
     os.system('lolcat /tmp/say')
     if random.choice([False, True]):
         fortune_word = random.choice(open('/tmp/say', 'r') \
-                .readline()[:-1].split())
+                .readline().replace('\n', '').split())
         get = input('来翻译一个词 {}: '.format(fortune_word))
         os.system('trans en:zh-cn -b "{}" 2> /dev/null > /tmp/ans'.format(fortune_word))
     else:
-        fortune_sentence = open('/tmp/say', 'r').readline()[:-1]
+        fortune_sentence = open('/tmp/say', 'r').readline().replace('\n', '')
         get = input('来翻译一句话 {}: '.format(fortune_sentence))
         os.system('trans en:zh-cn -b "{}" 2> /dev/null > /tmp/ans'.format(fortune_sentence))
-    trans_ans = open('/tmp/ans', 'r').readline()[:-1]
+    trans_ans = open('/tmp/ans', 'r').readline().replace('\n', '')
     if not trans_ans:
         print('trans 炸了。。。')
     else:

@@ -29,7 +29,7 @@ def check_ans_spj(config_dict, i, score):
     elif spres != 0:
         info.print_info('UKE', i)
     try:
-        get = float(open('sp.get', 'r').readline()[:-1])
+        get = float(open('sp.get', 'r').readline().replace('\n', ''))
     except FileNotFoundError:
         info.error_exit('Spj doesn\'t output score')
     print('\nMessage from spj:', file=open('res{}'.format(i), 'a'))
