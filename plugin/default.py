@@ -89,4 +89,4 @@ def end(score):
     print('score: {}'.format(score))
     print('\n\nSee more message in retest_dir\n\n')
     print('Made by Kewth', '(c)')
-    print('Thanks', 'for', 'using', 'ntest')
+    print('Thanks', 'for', 'using', 'retest')
