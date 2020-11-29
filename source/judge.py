@@ -42,7 +42,7 @@ def judge(config_dict, path):
     返回该题目的分数
     '''
     config.check_config(config_dict, path)
-    files = file_fun.read_data(config_dict['data'], path)
+    files = file_fun.read_data(config_dict, path)
     num = len(files)
     if num == 1:
         info.warning('No input and output file.')

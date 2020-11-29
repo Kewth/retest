@@ -73,19 +73,26 @@ def make_data(config_dict, path):
                     data['std'], std_res))
         print(colorama.Cursor.UP(), end='')
 
-def read_data(data, path):
+def read_data(config_dict, path):
     '''
-    在工作目录创建输入输出文件（源于 [data] ）
+    以 [config_dict] 配置
+    在工作目录创建输入输出文件
     返回所有数据文件的名字
     '''
+    data = config_dict['data']
     files = os.listdir(data)
     class File:
         def __init__(self, name, inname, outname):
             self.name = name
             self.inname = inname
             self.outname = outname
-            self.size = os.path.getsize(data + '/' + name + inname) \
-                    + os.path.getsize(data + '/' + name + outname)
+            if config_dict.get('sort') and config_dict['sort'] == 'dict':
+                self.key = name
+            if config_dict.get('sort') and config_dict['sort'] == 'num':
+                self.key = int(name)
+            else:
+                self.key = os.path.getsize(data + '/' + name + inname) \
+                        + os.path.getsize(data + '/' + name + outname)
     res = []
     for i in files:
         if i.rfind('.in') + 3 == len(i):
@@ -98,7 +105,7 @@ def read_data(data, path):
             if outname == '':
                 continue
             res.append(File(name, '.in', outname))
-    res.sort(key=lambda x : x.size)
+    res.sort(key=lambda x : x.key)
     for i in range(len(res)):
             up_path = '.'
             for j in range(path.count('/')):
