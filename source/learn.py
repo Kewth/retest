@@ -54,11 +54,18 @@ How to write retest.yaml?
 
     option:
         The option to compile (only used for g++ and gcc).
-        Many Oier may want to open O2 switch. Just add 'option: -O2'.
+        Many Oier may want to open O2 switch. Just add "option: -O2".
 
     cd:
         The directory where the real retest.yaml is.
-        Of course is's set to './' by default.
+        Of course is's set to "./" by default.
+
+    sort:
+        The way to sort the test data. It's set to "size" by default.
+        There are three options can be used:
+            "sort: size": Sort by the sum of the size of input file and output file.
+            "sort: num": If the file name is a integer, sort by the size of the integer.
+            "sort: dict": Sort by the lexicographically of file name.
 
     before:
         The command you want to run before retest.
@@ -70,7 +77,7 @@ How to write retest.yaml?
             after: rm -r data
 
     plugin:
-        The plugins you want to use which is set to default by default :)
+        The plugins you want to use which is set to "default" by default :)
         You can use only one plugin or up to 10 plugins.
         For example:
             plugin: default
@@ -80,7 +87,7 @@ How to write retest.yaml?
                 - acm
         When you want to judge more than one problem, the plugin in sub_config is invalid.
 
-    If you want to judge more problems, you can set 'Tn' sub configura
+    If you want to judge more problems, you can set "Tn" sub configura
   tion.
         For example:
             time: 1000
@@ -93,11 +100,11 @@ How to write retest.yaml?
         It will judge 2 problems in one time.
 
 Some usefull arguments:
-    You can rough understanding by using 'retest -h' or 'retest --help'.
+    You can rough understanding by using "retest -h" or "retest --help".
 
     --learn, -l:
         Print this message to learn how to use retest.
-        To display this better, you can use 'less' command:
+        To display this better, you can use "less" command:
             retest -l | less
 
     --plugin, -p:
