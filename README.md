@@ -79,5 +79,5 @@ Q: 为什么改 retest_dir 里面的数据的时候原数据也出了问题。
 A: retest_dir 内的数据实际上都是符号链接。
 
 Q: 为什么 retest 报错并崩溃？  
-A: 一种可能是写了 input/output 但没打 freopen 。
+A: 一种可能是写了 input/output 但没打 freopen 。（update: 该问题已被修复）
 

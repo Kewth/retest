@@ -51,14 +51,16 @@ def judge(config_dict, path):
     for i in range(1, num):
         # 评测单个测试点
         if config_dict.get('input'):
-            if os.path.exists(config_dict['input']):
+            # if os.path.exists(config_dict['input']):
+            if os.path.islink(config_dict['input']):
                 os.remove(config_dict['input'])
             os.symlink('{}.in'.format(i), config_dict['input'])
             input_str = ''
         else:
             input_str = ' < {}.in '.format(i)
         if config_dict.get('output'):
-            if os.path.exists(config_dict['output']):
+            # if os.path.exists(config_dict['output']):
+            if os.path.islink(config_dict['output']):
                 os.remove(config_dict['output'])
             os.symlink('{}.out'.format(i), config_dict['output'])
             output_str = ''
